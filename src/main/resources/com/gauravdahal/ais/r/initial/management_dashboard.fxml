@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="775.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gauravdahal.ais.r.initial.ManagementDashboardController">
+   <children>
+      <TabPane layoutX="10.0" layoutY="73.0" prefHeight="697.0" prefWidth="583.0" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab onSelectionChanged="#showRecruitList" text="Recruit List">
+            <content>
+                  <ScrollPane>
+                     <content>
+                    <AnchorPane fx:id="recruitListAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="1200.0" prefWidth="569.0">
+                           <children>
+                              <Label layoutX="19.0" layoutY="31.0" text="All Recruits">
+                                 <font>
+                                    <Font size="21.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="27.0" layoutY="96.0" prefHeight="17.0" prefWidth="112.0" text="Name">
+                                 <font>
+                                    <Font size="19.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="224.0" layoutY="96.0" text="Date joined">
+                                 <font>
+                                    <Font size="19.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="463.0" layoutY="96.0" text="Actions">
+                                 <font>
+                                    <Font size="19.0" />
+                                 </font>
+                              </Label>
+                              <VBox fx:id="recruitLayout" layoutX="23.0" layoutY="159.0" prefHeight="502.0" prefWidth="559.0" />
+                              <Label fx:id="labelRecruitNotFound" layoutX="200.0" layoutY="136.0" text="Recruits Not Found!" textFill="#e13838">
+                                 <font>
+                                    <Font size="18.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </AnchorPane>
+                     </content>
+                  </ScrollPane>
+            </content>
+          </Tab>
+            <Tab onSelectionChanged="#showProfile" text="My Profile">
+               <content>
+                  <ScrollPane>
+                     <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="900.0" prefWidth="581.0">
+                           <children>
+                              <Label layoutX="17.0" layoutY="35.0" text="Personal Details">
+                                 <font>
+                                    <Font size="20.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="18.0" layoutY="91.0" text="Full Name" />
+                              <TextField fx:id="tfStaffName" layoutX="137.0" layoutY="86.0" prefHeight="26.0" prefWidth="190.0" text="Nished Ghimire" />
+                              <Label layoutX="19.0" layoutY="128.0" text="Phone Number:" />
+                              <TextField layoutX="137.0" layoutY="125.0" prefHeight="26.0" prefWidth="189.0" text="0412345678" />
+                              <Label layoutX="19.0" layoutY="167.0" text="Email:" />
+                              <TextField layoutX="136.0" layoutY="162.0" prefHeight="26.0" prefWidth="189.0" text="test2@gmail.com" />
+                              <Label layoutX="19.0" layoutY="207.0" text="Username:" />
+                              <TextField layoutX="134.0" layoutY="203.0" prefHeight="26.0" prefWidth="189.0" text="1234" />
+                              <Label layoutX="19.0" layoutY="251.0" text="Staff ID:" />
+                              <TextField layoutX="136.0" layoutY="246.0" prefHeight="26.0" prefWidth="189.0" text="1111" />
+                              <Label layoutX="17.0" layoutY="292.0" text="Management Level" />
+                              <ChoiceBox layoutX="138.0" layoutY="287.0" prefHeight="26.0" prefWidth="161.0" />
+                              <Button layoutX="122.0" layoutY="389.0" mnemonicParsing="false" onAction="#onAccountUpdate" prefHeight="26.0" prefWidth="145.0" text="Update" />
+                              <Label layoutX="18.0" layoutY="338.0" text="Branch Name" />
+                              <ChoiceBox layoutX="139.0" layoutY="333.0" prefHeight="26.0" prefWidth="166.0" />
+                              <Label layoutX="152.0" layoutY="292.0" text="Mid-Level Manager" />
+                              <Label layoutX="157.0" layoutY="338.0" text="Brisbane" />
+                           </children>
+                        </AnchorPane>
+                     </content>
+                  </ScrollPane>
+               </content>
+            </Tab>
+            <Tab onSelectionChanged="#showSettings" text="Settings">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Button layoutX="136.0" layoutY="140.0" mnemonicParsing="false" onAction="#onPasswordChange" prefHeight="26.0" prefWidth="127.0" text="Change Password" />
+                        <Label layoutX="48.0" layoutY="44.0" text="New Password:" />
+                        <Label layoutX="47.0" layoutY="81.0" text="Re-enter New Password:" />
+                        <PasswordField layoutX="200.0" layoutY="40.0" />
+                        <PasswordField layoutX="201.0" layoutY="76.0" prefHeight="26.0" prefWidth="160.0" />
+                        <Button layoutX="136.0" layoutY="202.0" mnemonicParsing="false" onAction="#onAccountDelete" prefHeight="26.0" prefWidth="128.0" style="-fx-background-color: #b93a3a;" text="Delete Account" textFill="WHITE" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab onSelectionChanged="#showQualVerification" text="Qualification Verification">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Button layoutX="128.0" layoutY="209.0" mnemonicParsing="false" onAction="#onVerificationStarted" prefHeight="26.0" prefWidth="167.0" text="Start Verification" />
+                        <Label layoutX="47.0" layoutY="144.0" text="Enter student Id:" />
+                        <TextField fx:id="tfStudentId" layoutX="169.0" layoutY="140.0" prefHeight="26.0" prefWidth="160.0" />
+                        <Label layoutX="47.0" layoutY="43.0" text="Recruit Username" />
+                        <ChoiceBox fx:id="cboxRecruits" layoutX="168.0" layoutY="38.0" prefHeight="26.0" prefWidth="161.0" />
+                        <Label layoutX="47.0" layoutY="94.0" text="Select University" />
+                        <ChoiceBox fx:id="cBoxUniversity" layoutX="168.0" layoutY="89.0" prefHeight="26.0" prefWidth="161.0" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+        </tabs>
+      </TabPane>
+      <Button layoutX="522.0" layoutY="14.0" mnemonicParsing="false" onAction="#onLogout" text="Logout" />
+      <Label layoutX="16.0" layoutY="17.0" text="Welcome, ">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <Label layoutX="217.0" layoutY="13.0" text="AIS-R-INITIAL">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <Label fx:id="labelStaffName" layoutX="83.0" layoutY="18.0">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <Label layoutX="14.0" layoutY="40.0" text="(Manager)" />
+   </children>
+</AnchorPane>
