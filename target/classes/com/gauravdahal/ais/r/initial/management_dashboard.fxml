@@ -125,7 +125,7 @@
             <Font size="15.0" />
          </font>
       </Label>
-      <Label layoutX="217.0" layoutY="13.0" text="AIS-R-INITIAL">
+      <Label layoutX="217.0" layoutY="13.0" text="AIS-R-ENHANCED">
          <font>
             <Font size="20.0" />
          </font>
