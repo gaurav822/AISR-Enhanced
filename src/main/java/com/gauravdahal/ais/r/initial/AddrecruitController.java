@@ -23,14 +23,15 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
-import model.AdminStaff;
-import model.ManagementStaff;
-import model.Recruit;
+import aisr.model.AdminStaff;
+import aisr.model.ManagementStaff;
+import aisr.model.Recruit;
 
 /**
  * FXML Controller class
@@ -61,6 +62,8 @@ public class AddrecruitController implements Initializable {
     private PasswordField pfPassword;
     @FXML
     private PasswordField pfRePassword;
+    @FXML
+    private Button btnBack;
     
 
     /**
@@ -208,6 +211,11 @@ public class AddrecruitController implements Initializable {
         }
         
         return true;
+    }
+
+    @FXML
+    private void handleBackBtn(ActionEvent event) throws IOException {
+        App.setRoot("admin_dashboard");
     }
     
 }

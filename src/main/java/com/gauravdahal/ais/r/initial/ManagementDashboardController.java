@@ -29,7 +29,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import model.Recruit;
+import aisr.model.Recruit;
+import javafx.collections.ObservableList;
 
 /**
  * FXML Controller class
@@ -55,7 +56,7 @@ public class ManagementDashboardController implements Initializable {
     @FXML
     private ChoiceBox<String> cBoxUniversity;
     
-    private List<Recruit> mRecruits;
+    private ObservableList<Recruit> mRecruits;
     @FXML
     private Label labelRecruitNotFound;
     
@@ -67,22 +68,6 @@ public class ManagementDashboardController implements Initializable {
         
     }    
     
-    private void addNewRecruit(ActionEvent event) {
-        
-        try {
-            // Load the new FXML file containing the AnchorPane
-            FXMLLoader loader = new FXMLLoader(App.class.getResource("addrecruit.fxml"));
-            Parent newAnchorPaneRoot = loader.load();
-
-            // Retrieve the AnchorPane from the loaded FXML
-            AnchorPane newAnchorPane = (AnchorPane) newAnchorPaneRoot;
-
-            // Replace the content of anchorPaneDashboard with the content of the loaded AnchorPane
-            anchorPaneDashboard.getChildren().setAll(newAnchorPane.getChildren());
-        } catch (IOException e) {
-            e.printStackTrace(); // Handle the exception appropriately
-        }
-    }
 
     
     public void navigateBackToOriginalView() {
@@ -97,7 +82,7 @@ public class ManagementDashboardController implements Initializable {
        
        recruitLayout.getChildren().clear();
        try{
-       mRecruits = new ArrayList<>(readRecruitsFromCSV(Constants.RECRUIT_CSV_FILE));
+       mRecruits = readRecruitsFromCSV(Constants.RECRUIT_CSV_FILE);
        labelRecruitNotFound.setVisible(false);
        for(int i=0;i<mRecruits.size();i++){
        
@@ -127,8 +112,8 @@ public class ManagementDashboardController implements Initializable {
    
     
     
-public ArrayList<Recruit> readRecruitsFromCSV(String filePath) throws IOException {
-        ArrayList<Recruit> recruits = new ArrayList<>();
+public ObservableList<Recruit> readRecruitsFromCSV(String filePath) throws IOException {
+        ObservableList<Recruit> recruits = FXCollections.observableArrayList();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             boolean isFirstLine = true; // Flag to skip the header line

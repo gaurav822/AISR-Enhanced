@@ -1,10 +1,9 @@
 com/gauravdahal/ais/r/initial/EditrecruitController.class
-model/AdminStaff.class
-model/Staff.class
-model/Recruit.class
+aisr/model/ManagementStaff.class
 com/gauravdahal/ais/r/initial/LoginController.class
 com/gauravdahal/ais/r/initial/RecruitItemManagerController.class
 Utils/EncryptionUtils.class
+aisr/model/AdminStaff.class
 ENUM/BranchName.class
 com/gauravdahal/ais/r/initial/RegistrationController.class
 module-info.class
@@ -16,12 +15,13 @@ com/gauravdahal/ais/r/initial/ManagementDashboardController.class
 com/gauravdahal/ais/r/initial/App.class
 ENUM/StaffType.class
 Utils/IVGenerator.class
+aisr/model/Recruit.class
 ENUM/ManagementLevel.class
 com/gauravdahal/ais/r/initial/AddrecruitController.class
 com/gauravdahal/ais/r/initial/RecruitItemController.class
 com/gauravdahal/ais/r/initial/EditrecruitAdminController.class
 ENUM/Department.class
 Utils/DialogUtils$1.class
-model/ManagementStaff.class
 Constants/Constants.class
 Utils/Utils.class
+aisr/model/Staff.class

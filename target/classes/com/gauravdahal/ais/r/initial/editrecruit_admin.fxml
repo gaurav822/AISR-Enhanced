@@ -47,6 +47,5 @@
       <Label fx:id="labelDepartment" layoutX="210.0" layoutY="530.0" text="Pending !!" />
       <Label layoutX="252.0" layoutY="751.0" />
       <DatePicker fx:id="interviewDatePicker" layoutX="207.0" layoutY="444.0" />
-      <Button layoutX="19.0" layoutY="21.0" mnemonicParsing="false" onAction="#onBackPressed" prefHeight="26.0" prefWidth="119.0" text="Go back" />
    </children>
 </AnchorPane>

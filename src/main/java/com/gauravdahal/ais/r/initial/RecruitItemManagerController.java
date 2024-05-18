@@ -22,7 +22,9 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import model.Recruit;
+import aisr.model.Recruit;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 /**
  * FXML Controller class
@@ -52,20 +54,19 @@ public class RecruitItemManagerController implements Initializable {
     @FXML
     private void onItemView(ActionEvent event) {
         try {
-        // Load the new FXML file
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("editrecruit.fxml"));
-        AnchorPane newScrollPane = loader.load();
-        
-        // Pass the recruit data to the controller of the new FXML file
-        EditrecruitController controller = loader.getController();
-        controller.setData(recruit);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("editrecruit.fxml"));
+            Parent root = loader.load();
 
-        // Replace the parent AnchorPane with the new AnchorPane
-        AnchorPane parentAnchorPane = (AnchorPane) hBoxEachItem.getParent().getParent(); // Assuming the parent is an AnchorPane
-        parentAnchorPane.getChildren().setAll(newScrollPane);
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
+            EditrecruitController controller = loader.getController();
+            controller.setData(recruit);
+
+            // Get the current stage
+            Stage stage = (Stage) hBoxEachItem.getScene().getWindow();
+            // Set the new scene root
+            stage.getScene().setRoot(root);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
           
     }
 

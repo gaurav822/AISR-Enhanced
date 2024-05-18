@@ -7,65 +7,24 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="775.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gauravdahal.ais.r.initial.AdminDashboardController">
    <children>
-      <TabPane layoutX="10.0" layoutY="73.0" prefHeight="697.0" prefWidth="583.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane layoutX="9.0" layoutY="124.0" prefHeight="697.0" prefWidth="583.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
-          <Tab fx:id="tabDashboard" onSelectionChanged="#showDashboard" text="Dashboard">
-            <content>
-                  <ScrollPane>
-                     <content>
-                    <AnchorPane fx:id="anchorPaneDashboard" minHeight="0.0" minWidth="0.0" prefHeight="1000.0" prefWidth="594.0">
-                           <children>
-                              <Button layoutX="183.0" layoutY="146.0" mnemonicParsing="false" onAction="#addNewRecruit" prefHeight="38.0" prefWidth="146.0" text="Add a New Recruit" />
-                           </children>
-                        </AnchorPane>
-                     </content>
-                  </ScrollPane>
-            </content>
-          </Tab>
-          <Tab onSelectionChanged="#showRecruitList" text="Recruit List">
-            <content>
-                  <ScrollPane>
-                     <content>
-                    <AnchorPane fx:id="recruitListAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="1200.0" prefWidth="569.0">
-                           <children>
-                              <Label layoutX="19.0" layoutY="31.0" text="All Recruits">
-                                 <font>
-                                    <Font size="21.0" />
-                                 </font>
-                              </Label>
-                              <Label layoutX="27.0" layoutY="96.0" prefHeight="17.0" prefWidth="112.0" text="Name">
-                                 <font>
-                                    <Font size="19.0" />
-                                 </font>
-                              </Label>
-                              <Label layoutX="224.0" layoutY="96.0" text="Date joined">
-                                 <font>
-                                    <Font size="19.0" />
-                                 </font>
-                              </Label>
-                              <Label layoutX="463.0" layoutY="96.0" text="Actions">
-                                 <font>
-                                    <Font size="19.0" />
-                                 </font>
-                              </Label>
-                              <VBox fx:id="recruitLayout" layoutX="23.0" layoutY="159.0" prefHeight="502.0" prefWidth="559.0" />
-                              <Label fx:id="labelRecruitNotFound" layoutX="200.0" layoutY="136.0" text="Recruits Not Found!" textFill="#e13838">
-                                 <font>
-                                    <Font size="18.0" />
-                                 </font>
-                              </Label>
-                           </children>
-                        </AnchorPane>
-                     </content>
-                  </ScrollPane>
-            </content>
+          <Tab onSelectionChanged="#showRecruitList" text="Dashboard">
+               <content>
+                  <AnchorPane prefHeight="666.0" prefWidth="515.0">
+                     <children>
+                        <Label layoutX="14.0" layoutY="14.0" text="All Recruits" />
+                        <TableView fx:id="tableViewRecruit" layoutX="14.0" layoutY="46.0" prefHeight="352.0" prefWidth="583.0" />
+                     </children>
+                  </AnchorPane>
+               </content>
           </Tab>
             <Tab onSelectionChanged="#showProfile" text="My Profile">
                <content>
@@ -131,5 +90,6 @@
          </font>
       </Label>
       <Label layoutX="18.0" layoutY="40.0" text="(Admin)" />
+      <Button layoutX="14.0" layoutY="77.0" mnemonicParsing="false" onAction="#addNewRecruit" text="New Recruit" />
    </children>
 </AnchorPane>

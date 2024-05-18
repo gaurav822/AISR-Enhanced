@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="NewDetailsAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="875.0" prefWidth="670.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gauravdahal.ais.r.initial.AddrecruitController">
+<AnchorPane fx:id="NewDetailsAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gauravdahal.ais.r.initial.AddrecruitController">
          <children>
             <Label layoutX="173.0" layoutY="56.0" text="New Recruit Details">
                <font>
@@ -38,5 +38,6 @@
             <Label layoutX="104.0" layoutY="554.0" text="Documents:" />
             <Button layoutX="228.0" layoutY="629.0" mnemonicParsing="false" onAction="#onDataEntered" prefHeight="26.0" prefWidth="134.0" text="Enter Data" />
       <Button layoutX="202.0" layoutY="687.0" mnemonicParsing="false" onAction="#onDataSaved" prefHeight="26.0" prefWidth="186.0" text="Save Data" />
+      <Button fx:id="btnBack" layoutX="34.0" layoutY="34.0" mnemonicParsing="false" onAction="#handleBackBtn" prefHeight="27.0" prefWidth="77.0" text="&lt;- Back" />
          </children>
 </AnchorPane>

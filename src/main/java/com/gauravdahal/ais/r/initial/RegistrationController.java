@@ -30,8 +30,8 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
-import model.AdminStaff;
-import model.ManagementStaff;
+import aisr.model.AdminStaff;
+import aisr.model.ManagementStaff;
 /**
  * FXML Controller class
  *

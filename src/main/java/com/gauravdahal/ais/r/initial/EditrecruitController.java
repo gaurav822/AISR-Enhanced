@@ -30,7 +30,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
-import model.Recruit;
+import aisr.model.Recruit;
 /**
  * FXML Controller class
  *
@@ -112,16 +112,16 @@ public class EditrecruitController implements Initializable {
         
     }
 
-    @FXML
-    private void onBackPressed(ActionEvent event) throws IOException {
-       // Call the showDashboard method in DashboardController to go back to the previous AnchorPane
-            FXMLLoader dashboardLoader = new FXMLLoader(getClass().getResource("dashboard.fxml"));
-            Parent dashboardRoot = dashboardLoader.load();
-            ManagementDashboardController dashboardController = dashboardLoader.getController();
-            dashboardController.navigateBackToOriginalView();
-            
-
-    }
+//    @FXML
+//    private void onBackPressed(ActionEvent event) throws IOException {
+//       // Call the showDashboard method in DashboardController to go back to the previous AnchorPane
+//            FXMLLoader dashboardLoader = new FXMLLoader(getClass().getResource("dashboard.fxml"));
+//            Parent dashboardRoot = dashboardLoader.load();
+//            ManagementDashboardController dashboardController = dashboardLoader.getController();
+//            dashboardController.navigateBackToOriginalView();
+//            
+//
+//    }
 
     @FXML
     private void onDepartmentAssigned(ActionEvent event) throws IOException {
@@ -164,6 +164,11 @@ public class EditrecruitController implements Initializable {
             // Handle any IO exception appropriately
             throw e;
         }
+    }
+
+    @FXML
+    private void onBackPressed(ActionEvent event) throws IOException {
+        App.setRoot("management_dashboard");
     }
 
 }
