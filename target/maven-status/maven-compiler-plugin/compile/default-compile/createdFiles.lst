@@ -16,12 +16,16 @@ com/gauravdahal/ais/r/initial/App.class
 ENUM/StaffType.class
 Utils/IVGenerator.class
 aisr/model/Recruit.class
+database/DatabaseHelper.class
 ENUM/ManagementLevel.class
 com/gauravdahal/ais/r/initial/AddrecruitController.class
 com/gauravdahal/ais/r/initial/RecruitItemController.class
 com/gauravdahal/ais/r/initial/EditrecruitAdminController.class
+server/ClientHandler.class
 ENUM/Department.class
 Utils/DialogUtils$1.class
+client/Client.class
 Constants/Constants.class
 Utils/Utils.class
+server/MultiThreadedServer.class
 aisr/model/Staff.class

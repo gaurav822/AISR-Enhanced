@@ -10,6 +10,12 @@
         <maven.compiler.target>11</maven.compiler.target>
     </properties>
     <dependencies>
+         <!-- MySQL JDBC Driver dependency -->
+    <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <version>8.0.33</version> <!-- Use the latest version available -->
+    </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>

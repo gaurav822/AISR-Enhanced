@@ -24,5 +24,6 @@
       <Text layoutX="221.0" layoutY="95.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Employee portal for  AI - SPACE" wrappingWidth="210.9594177141837" />
       <Text layoutX="170.0" layoutY="379.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Don't have an account ?" />
       <Button fx:id="btnRegister" layoutX="319.0" layoutY="360.0" mnemonicParsing="false" onAction="#onRegistrationClicked" prefHeight="26.0" prefWidth="135.0" text="Register" />
+      <Button layoutX="263.0" layoutY="421.0" mnemonicParsing="false" onAction="#onConnectionTest" text="Test DB Connection" />
    </children>
 </AnchorPane>

@@ -21,6 +21,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import javafx.scene.control.Alert;
 
 /**
  * FXML Controller class for handling login functionality.
@@ -45,6 +49,11 @@ public class LoginController implements Initializable {
     /**
      * Initializes the controller class.
      */
+    
+    private static final String DATABASE_URL = "jdbc:mysql://localhost:3306/AISRDB";
+    private static final String DATABASE_USER = "root";
+    private static final String DATABASE_PASSWORD = "gauravdahal";
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
@@ -149,6 +158,34 @@ public class LoginController implements Initializable {
 
     // No matching credentials found, return false
     return false;
-}
+    }
+    
+    
+     private void testConnection() {
+        try {
+            // Load MySQL JDBC Driver
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection(DATABASE_URL, DATABASE_USER, DATABASE_PASSWORD)) {
+                showAlert(Alert.AlertType.INFORMATION, "Connection Successful", "Connection to the database was successful.");
+            }
+        } catch (ClassNotFoundException e) {
+            showAlert(Alert.AlertType.ERROR, "Driver Not Found", "MySQL JDBC Driver not found.\n" + e.getMessage());
+        } catch (SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Connection Failed", "Failed to connect to the database.\n" + e.getMessage());
+        }
+    }
+
+    private void showAlert(Alert.AlertType alertType, String title, String message) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    @FXML
+    private void onConnectionTest(ActionEvent event) {
+        testConnection();
+    }
     
 }

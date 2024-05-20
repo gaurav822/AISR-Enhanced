@@ -32,6 +32,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import aisr.model.AdminStaff;
 import aisr.model.ManagementStaff;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 /**
  * FXML Controller class
  *
@@ -72,6 +78,9 @@ public class RegistrationController implements Initializable {
     
     private ArrayList<AdminStaff> adminStaffs;
     private ArrayList<ManagementStaff> managementStaffs;
+    
+    private static final String SERVER_ADDRESS = "localhost";
+    private static final int SERVER_PORT = 1234;
     
        
     
@@ -301,14 +310,65 @@ public class RegistrationController implements Initializable {
         }
         
         else{
-            saveDataToCSV();
-          
+            try{
+                sendDataToServer();
+            }
+            
+            catch(Exception e){
+                System.out.println(e);
+            }
             adminStaffs.clear();
             managementStaffs.clear();
         }
         
         
     }
+    
+    
+private void sendDataToServer() {
+    Task<Void> task = new Task<>() {
+        @Override
+        protected Void call() throws Exception {
+            try {
+                Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
+                ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+                // Example: Adding admin staff
+                for (AdminStaff adminStaff : adminStaffs) {
+                    out.writeObject("ADD_ADMIN"); // Send command to add admin staff
+                    out.writeObject(adminStaff); // Send admin staff object
+                    out.flush();
+
+                    // Wait for acknowledgment from the server
+                    String response = in.readLine();
+                    if (response != null && response.equals("SUCCESS")) {
+                        Platform.runLater(() -> {
+                            DialogUtils.showSuccessDialog("Admin Staff added successfully!");
+                        });
+                    } else {
+                        Platform.runLater(() -> {
+                            DialogUtils.showErrorDialog("Failed to add Admin Staff!");
+                        });
+                    }
+                }
+
+                // Close resources
+                out.close();
+                in.close();
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+    };
+
+    Thread thread = new Thread(task);
+    thread.setDaemon(true);
+    thread.start();
+}
+
 
 
 }

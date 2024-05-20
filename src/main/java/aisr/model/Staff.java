@@ -4,11 +4,13 @@
  */
 package aisr.model;
 
+import java.io.Serializable;
+
 /**
  *
  * @author gauravdahal
  */
-public class Staff {
+public class Staff implements Serializable{
     private String fullName;
     private String address;
     private String phoneNumber;
