@@ -1,5 +1,6 @@
 com/gauravdahal/ais/r/initial/EditrecruitController.class
 aisr/model/ManagementStaff.class
+com/gauravdahal/ais/r/initial/RegistrationController$1.class
 com/gauravdahal/ais/r/initial/LoginController.class
 com/gauravdahal/ais/r/initial/RecruitItemManagerController.class
 Utils/EncryptionUtils.class
