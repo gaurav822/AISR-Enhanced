@@ -5,12 +5,13 @@
 package aisr.model;
 
 import ENUM.Position;
+import java.io.Serializable;
 
 /**
  *
  * @author gauravdahal
  */
-public class AdminStaff extends Staff {
+public class AdminStaff extends Staff implements Serializable {
     
     private String staffId;
     private Position positionType;

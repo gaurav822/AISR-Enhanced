@@ -14,7 +14,9 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.layout.VBox;
 
 public class DialogUtils {
 
@@ -85,5 +87,34 @@ public class DialogUtils {
         // Start the task
         new Thread(task).start();
     }
+    
+    
+    public static void showProgressDialog(String message, Task<?> task) {
+        Alert alert = new Alert(Alert.AlertType.NONE);
+        alert.setTitle(message);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+
+        ProgressBar progressBar = new ProgressBar();
+        progressBar.progressProperty().bind(task.progressProperty());
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setContent(new VBox(progressBar));
+
+        alert.setOnCloseRequest(event -> {
+            task.cancel(); // Cancel the task if the dialog is closed
+        });
+
+        task.setOnCancelled(event -> {
+            alert.close(); // Close the dialog if the task is cancelled
+        });
+
+        Thread thread = new Thread(task);
+        thread.setDaemon(true); // Set the thread as daemon to prevent blocking the application exit
+        thread.start();
+
+        alert.show();
+    }
+
 }
 

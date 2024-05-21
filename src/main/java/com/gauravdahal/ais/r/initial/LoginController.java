@@ -8,6 +8,7 @@ import Constants.Constants;
 import ENUM.StaffType;
 import Utils.DialogUtils;
 import Utils.EncryptionUtils;
+import client.ClientConnection;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -21,6 +22,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import javafx.scene.control.Alert;
 
 /**
  * FXML Controller class for handling login functionality.
@@ -42,12 +47,21 @@ public class LoginController implements Initializable {
     private Button btnRegister;
 
     private StaffType staffType;
+    @FXML
+    private Button connectionButton;
     /**
      * Initializes the controller class.
      */
+  
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        if(ClientConnection.getInstance().getSocket()!=null){
+             connectionButton.setText("Disconnect from Server");
+        }
+        else{
+             connectionButton.setText("Connect to Server");
+        }
     }    
 
     @FXML
@@ -149,6 +163,28 @@ public class LoginController implements Initializable {
 
     // No matching credentials found, return false
     return false;
-}
+    }
+    
+
+    private void showAlert(Alert.AlertType alertType, String title, String message) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    @FXML
+    private void onConnect(ActionEvent event) {
+        ClientConnection clientConnection = ClientConnection.getInstance();
+        boolean isConnected = clientConnection.toggleConnection();
+        if(isConnected){
+            connectionButton.setText("Disconnect from Server");
+        }
+        else{
+            connectionButton.setText("Connect to Server");
+        }
+      
+    }
     
 }

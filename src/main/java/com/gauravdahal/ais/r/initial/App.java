@@ -1,5 +1,6 @@
 package com.gauravdahal.ais.r.initial;
 
+import database.DatabaseHelper;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -8,6 +9,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import static javafx.application.Application.launch;
+import server.MultiThreadedServer;
 
 /**
  * JavaFX App
@@ -33,6 +35,17 @@ public class App extends Application {
     }
 
     public static void main(String[] args) {
+        
+        new DatabaseHelper();
+        // Start the server in a new thread
+        new Thread(() -> {
+            MultiThreadedServer server = new MultiThreadedServer();
+            server.start();
+        }).start();
+        
+        
+        
+        
         launch();
     }
 

@@ -4,11 +4,13 @@
  */
 package aisr.model;
 
+import java.io.Serializable;
+
 /**
  *
  * @author gauravdahal
  */
-public class Recruit extends Staff{
+public class Recruit extends Staff implements Serializable{
     
     private String interviewDate;
     private String qualificationLevel;

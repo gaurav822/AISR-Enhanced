@@ -5,12 +5,13 @@
 package aisr.model;
 
 import ENUM.ManagementLevel;
+import java.io.Serializable;
 
 /**
  *
  * @author gauravdahal
  */
-public class ManagementStaff extends Staff{
+public class ManagementStaff extends Staff implements Serializable{
     
     private String staffId;
     private ManagementLevel managementLevel;

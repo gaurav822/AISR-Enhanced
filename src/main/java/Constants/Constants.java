@@ -12,6 +12,6 @@ public class Constants {
     
     public static final String STAFF_CSV_FILE = "staff.csv";
     public static final String RECRUIT_CSV_FILE = "recruits.csv";
-
+    public static final String DATABASE_NAME = "AISRDB";
     
 }

@@ -32,11 +32,31 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import aisr.model.AdminStaff;
 import aisr.model.ManagementStaff;
+import client.ClientConnection;
+import database.DatabaseHelper;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.EOFException;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.ConnectException;
+import java.net.Socket;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.List;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 /**
  * FXML Controller class
  *
  * @author gauravdahal
  */
+
+ 
+
+
 public class RegistrationController implements Initializable {
 
 
@@ -57,7 +77,7 @@ public class RegistrationController implements Initializable {
     @FXML
     private PasswordField tfRePassword;
     @FXML
-    private TextField tfStaffId;
+        private TextField tfStaffId;
     @FXML
     private ChoiceBox<String> cBoxPosition;
     @FXML
@@ -73,6 +93,13 @@ public class RegistrationController implements Initializable {
     private ArrayList<AdminStaff> adminStaffs;
     private ArrayList<ManagementStaff> managementStaffs;
     
+    private static final String SERVER_ADDRESS = "localhost";
+    private static final int SERVER_PORT = 6789;
+    
+    private Socket socket = null;
+    private ObjectOutputStream out;
+    private ObjectInputStream in;
+   
        
     
     /**
@@ -195,6 +222,7 @@ public class RegistrationController implements Initializable {
         return staff;
         
     }
+    
 
     @FXML
     private void onLoginClicked(ActionEvent event)throws IOException {
@@ -263,7 +291,10 @@ public class RegistrationController implements Initializable {
     @FXML
     private void onStaffDetailsEntered(ActionEvent event) {
         if(checkForValidation()){
-            
+            if(Utils.isDuplicateStaffId(tfStaffId.getText(),adminStaffs,managementStaffs)) {
+                DialogUtils.showErrorDialog("Staff ID already exists. Please use a different Staff ID.");
+                return;
+            }
             if(staffType == StaffType.ADMIN){
                 adminStaffs.add(getAdminDetails());
                 DialogUtils.showSuccessDialog("Admin Staff Details Added, Don't Forget to save !!!");
@@ -301,14 +332,104 @@ public class RegistrationController implements Initializable {
         }
         
         else{
-            saveDataToCSV();
-          
-            adminStaffs.clear();
-            managementStaffs.clear();
+            try{
+                sendDataToServer();
+            }
+            
+            catch(Exception e){
+                System.out.println(e);
+            }
+            
         }
         
         
     }
+    
+    
+private void sendDataToServer() {
+    
+     ClientConnection clientConnection = ClientConnection.getInstance();
+    
+     if (clientConnection.getSocket() == null || !clientConnection.getSocket().isConnected()) {
+            DialogUtils.showWarningDialog("Client is disconnected. Connect to the Server first");
+            System.out.println("Client is disconnected. Connect to the Server first");
+            return;
+        }
+
+        try {
+            for (AdminStaff adminStaff : adminStaffs) {
+                String encryptedPassword = EncryptionUtils.encrypt(adminStaff.getPassword());
+                adminStaff.setPassword(encryptedPassword);
+                clientConnection.getOut().writeObject("ADD_ADMIN"); // Send command to add admin staff
+                clientConnection.getOut().writeObject(adminStaff); // Send admin staff object
+            }
+
+            for (ManagementStaff managementStaff : managementStaffs) {
+                String encryptedPassword = EncryptionUtils.encrypt(managementStaff.getPassword());
+                managementStaff.setPassword(encryptedPassword);
+                clientConnection.getOut().writeObject("ADD_MANAGEMENT"); // Send command to add management staff
+                clientConnection.getOut().writeObject(managementStaff); // Send management staff object
+            }
+            
+            clientConnection.getOut().flush();
+            DialogUtils.showSuccessDialog("Staffs Registered Successfully!");
+            adminStaffs.clear();
+            managementStaffs.clear();
+
+        } catch (EOFException e) {
+            DialogUtils.showErrorDialog(e.getMessage());
+            System.out.println("EOF: " + e.getMessage());
+        } catch (IOException e) {
+            DialogUtils.showErrorDialog(e.getMessage());
+            System.out.println("readline: " + e.getMessage());
+        }
+    }
+
+}
+
+// Thread for handling incoming data from the server
+class SocketDataIn extends Thread {
+
+    private final ObjectInputStream in;
+
+    public SocketDataIn(ObjectInputStream in) {
+        this.in = in;
+    }
+
+    public void run() {
+        while (true) {
+            try {
+                Thread.sleep(10);
+                Object objori = in.readObject();
+                String command = (String) objori;
+                if (command.equals("ADD_ADMIN")) {
+                    AdminStaff adminStaff = (AdminStaff) in.readObject();
+                    System.out.println(adminStaff);
+                } else if (command.equals("ADD_MANAGEMENT")) {
+                    ManagementStaff managementStaff = (ManagementStaff) in.readObject();
+                    System.out.println(managementStaff);
+                }
+
+                //Wait for one sec so it doesn't print too fast
+            } 
+            catch (SocketException | InterruptedException e) {
+                System.out.println("Interrupted:" + e.getMessage() + "\n");
+                break;
+            } catch (IOException ex) {
+//                 System.out.println("""
+//                            IO Exception: Server might have been stopped!""");
+                break;
+            } catch (ClassNotFoundException ex) {
+                 System.out.println("Class Not Found:" + ex.getMessage() + "\n");
+                break;
+            }
+            
+        }
+    }
+
 
 
 }
+
+
+
