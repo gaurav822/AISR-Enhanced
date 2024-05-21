@@ -9,6 +9,7 @@ package server;
  * @author gauravdahal
  */
 
+import Utils.DialogUtils;
 import aisr.model.AdminStaff;
 import aisr.model.ManagementStaff;
 import database.DatabaseHelper;
@@ -16,61 +17,91 @@ import database.DatabaseHelper;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MultiThreadedServer {
 
-    private static final int PORT = 1234;
-  
-
     public void start() {
-        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-            System.out.println("Server started on port " + PORT);
-            while (true) {
-                Socket clientSocket = serverSocket.accept();
-                new ClientHandler(clientSocket);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-}
+        System.out.println("------------");
 
-class ClientHandler implements Runnable {
-
-    private Socket clientSocket;
-
-
-    public ClientHandler(Socket socket) {
-            this.clientSocket = socket;
-        }
-
-    @Override
-    public void run() {
-        try (ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream());
-             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
-
-            Object inputObject;
-            while ((inputObject = in.readObject()) != null) {
-                String command = (String) inputObject;
-                if (command.equals("ADD_ADMIN")) {
-                    AdminStaff adminStaff = (AdminStaff) in.readObject();
-                    DatabaseHelper.getInstance().insertAdminStaff(adminStaff);
-                    out.println("SUCCESS");
-                } else if (command.equals("ADD_MANAGEMENT")) {
-                    ManagementStaff managementStaff = (ManagementStaff) in.readObject();
-                    DatabaseHelper.getInstance().insertManagementStaff(managementStaff);
-                    out.println("SUCCESS");
-                }
-            }
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        } finally {
+        // Start a new thread to handle client connections
+        new Thread(() -> {
             try {
-                clientSocket.close();
+                int serverPort = 6789;
+                ServerSocket listenSocket = new ServerSocket(serverPort);
+
+                System.out.println("ComputeServer: Waiting for connections...");
+                while (true) {
+                    Socket clientSocket = listenSocket.accept();
+                    Connection c = new Connection(clientSocket);
+                    c.start();
+                }
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("Error in server socket: " + e.getMessage());
             }
-        }
+        }).start();
+
+        System.out.println("The server is listening on 6789.");
     }
 }
+
+/**
+ * Represents a connection with a client.
+ */
+class Connection extends Thread {
+
+    ObjectInputStream in;
+    ObjectOutputStream out;
+    Socket clientSocket;
+    private String classPath;
+
+    /**
+     * Constructs a Connection object with the given client socket.
+     *
+     * @param aClientSocket The client socket.
+     */
+    public Connection(Socket aClientSocket) {
+        this.classPath = System.getProperty("java.class.path");
+
+        try {
+            clientSocket = aClientSocket;
+            in = new ObjectInputStream(clientSocket.getInputStream());
+            out = new ObjectOutputStream(clientSocket.getOutputStream());
+        } catch (IOException e) {
+            System.out.println("Error in connection setup: " + e.getMessage());
+        }
+    }
+
+    /**
+     * The main execution logic for the connection thread.
+     */
+    public void run() {
+        while (true) {
+    try {
+        Object inputObject = in.readObject();
+        if (inputObject == null) {
+            // End of stream reached, break out of the loop
+            break;
+        }
+        String command = (String) inputObject;
+        if (command.equals("ADD_ADMIN")) {
+            AdminStaff adminStaff = (AdminStaff) in.readObject();
+            DatabaseHelper.getInstance().insertAdminStaff(adminStaff);
+        } else if (command.equals("ADD_MANAGEMENT")) {
+            ManagementStaff managementStaff = (ManagementStaff) in.readObject();
+            DatabaseHelper.getInstance().insertManagementStaff(managementStaff);
+        }
+    } catch (EOFException e) {
+        // End of stream reached, break out of the loop
+        break;
+    } catch (IOException | ClassNotFoundException e) {
+        e.printStackTrace();
+        break;
+    }
+}
+
+    }
+}
+
 

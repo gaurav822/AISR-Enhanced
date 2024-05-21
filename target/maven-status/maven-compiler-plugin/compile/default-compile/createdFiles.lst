@@ -1,6 +1,7 @@
 com/gauravdahal/ais/r/initial/EditrecruitController.class
 aisr/model/ManagementStaff.class
-com/gauravdahal/ais/r/initial/RegistrationController$1.class
+com/gauravdahal/ais/r/initial/SocketDataIn.class
+server/Connection.class
 com/gauravdahal/ais/r/initial/LoginController.class
 com/gauravdahal/ais/r/initial/RecruitItemManagerController.class
 Utils/EncryptionUtils.class
@@ -13,6 +14,7 @@ ENUM/QualificationLevel.class
 com/gauravdahal/ais/r/initial/AdminDashboardController.class
 Utils/DialogUtils.class
 com/gauravdahal/ais/r/initial/ManagementDashboardController.class
+client/ClientConnection.class
 com/gauravdahal/ais/r/initial/App.class
 ENUM/StaffType.class
 Utils/IVGenerator.class
@@ -22,11 +24,10 @@ ENUM/ManagementLevel.class
 com/gauravdahal/ais/r/initial/AddrecruitController.class
 com/gauravdahal/ais/r/initial/RecruitItemController.class
 com/gauravdahal/ais/r/initial/EditrecruitAdminController.class
-server/ClientHandler.class
 ENUM/Department.class
 Utils/DialogUtils$1.class
-client/Client.class
 Constants/Constants.class
 Utils/Utils.class
+client/SocketDataIn.class
 server/MultiThreadedServer.class
 aisr/model/Staff.class

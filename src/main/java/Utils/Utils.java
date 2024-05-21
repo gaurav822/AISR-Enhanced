@@ -4,8 +4,11 @@
  */
 package Utils;
 
+import aisr.model.AdminStaff;
+import aisr.model.ManagementStaff;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 /**
@@ -67,6 +70,21 @@ public class Utils {
             return true;
         }
     
+        return false;
+    }
+    
+    
+     public static boolean isDuplicateStaffId(String staffId, ArrayList<AdminStaff> adminStaffs, ArrayList<ManagementStaff> managementStaffs) {
+        for (AdminStaff adminStaff : adminStaffs) {
+            if (adminStaff.getStaffId().equals(staffId)) {
+                return true;
+            }
+        }
+        for (ManagementStaff managementStaff : managementStaffs) {
+            if (managementStaff.getStaffId().equals(staffId)) {
+                return true;
+            }
+        }
         return false;
     }
    

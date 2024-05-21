@@ -8,6 +8,7 @@ import Constants.Constants;
 import ENUM.StaffType;
 import Utils.DialogUtils;
 import Utils.EncryptionUtils;
+import client.ClientConnection;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -46,17 +47,21 @@ public class LoginController implements Initializable {
     private Button btnRegister;
 
     private StaffType staffType;
+    @FXML
+    private Button connectionButton;
     /**
      * Initializes the controller class.
      */
-    
-    private static final String DATABASE_URL = "jdbc:mysql://localhost:3306/AISRDB";
-    private static final String DATABASE_USER = "root";
-    private static final String DATABASE_PASSWORD = "gauravdahal";
+  
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        if(ClientConnection.getInstance().getSocket()!=null){
+             connectionButton.setText("Disconnect from Server");
+        }
+        else{
+             connectionButton.setText("Connect to Server");
+        }
     }    
 
     @FXML
@@ -160,20 +165,6 @@ public class LoginController implements Initializable {
     return false;
     }
     
-    
-     private void testConnection() {
-        try {
-            // Load MySQL JDBC Driver
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            try (Connection connection = DriverManager.getConnection(DATABASE_URL, DATABASE_USER, DATABASE_PASSWORD)) {
-                showAlert(Alert.AlertType.INFORMATION, "Connection Successful", "Connection to the database was successful.");
-            }
-        } catch (ClassNotFoundException e) {
-            showAlert(Alert.AlertType.ERROR, "Driver Not Found", "MySQL JDBC Driver not found.\n" + e.getMessage());
-        } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Connection Failed", "Failed to connect to the database.\n" + e.getMessage());
-        }
-    }
 
     private void showAlert(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
@@ -184,8 +175,16 @@ public class LoginController implements Initializable {
     }
 
     @FXML
-    private void onConnectionTest(ActionEvent event) {
-        testConnection();
+    private void onConnect(ActionEvent event) {
+        ClientConnection clientConnection = ClientConnection.getInstance();
+        boolean isConnected = clientConnection.toggleConnection();
+        if(isConnected){
+            connectionButton.setText("Disconnect from Server");
+        }
+        else{
+            connectionButton.setText("Connect to Server");
+        }
+      
     }
     
 }

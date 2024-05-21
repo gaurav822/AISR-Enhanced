@@ -10,6 +10,7 @@ package database;
  */
 
 import Constants.Constants;
+import Utils.DialogUtils;
 import aisr.model.AdminStaff;
 import aisr.model.ManagementStaff;
 import aisr.model.Recruit;
@@ -22,7 +23,7 @@ import java.sql.Statement;
 public class DatabaseHelper {
 
     private static DatabaseHelper instance;
-    private static final String DATABASE_URL = "jdbc:mysql://localhost:3306/";
+    private static final String DATABASE_URL = "jdbc:mysql://localhost:3306/aisrdb";
     private static final String DATABASE_USER = "root";
     private static final String DATABASE_PASSWORD = "gauravdahal";
     
@@ -126,7 +127,7 @@ public class DatabaseHelper {
     }
     
     
-    public void insertAdminStaff(AdminStaff adminStaff) {
+    public void insertAdminStaff(AdminStaff adminStaff){
         String query = "INSERT INTO staff (staff_id, full_name, address, phone_number, email_address, username, password, staff_type, position_type) VALUES (?, ?, ?, ?, ?, ?, ?, 'ADMIN', ?)";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -148,7 +149,7 @@ public class DatabaseHelper {
         }
     }
 
-    public void insertManagementStaff(ManagementStaff managementStaff) {
+    public void insertManagementStaff(ManagementStaff managementStaff){
         String query = "INSERT INTO staff (staff_id, full_name, address, phone_number, email_address, username, password, staff_type, management_level, branch_name) VALUES (?, ?, ?, ?, ?, ?, ?, 'MANAGEMENT', ?, ?)";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
