@@ -8,7 +8,6 @@ package server;
  *
  * @author gauravdahal
  */
-
 import Utils.DialogUtils;
 import aisr.model.AdminStaff;
 import aisr.model.ManagementStaff;
@@ -78,30 +77,28 @@ class Connection extends Thread {
      */
     public void run() {
         while (true) {
-    try {
-        Object inputObject = in.readObject();
-        if (inputObject == null) {
-            // End of stream reached, break out of the loop
-            break;
+            try {
+                Object inputObject = in.readObject();
+                if (inputObject == null) {
+                    // End of stream reached, break out of the loop
+                    break;
+                }
+                String command = (String) inputObject;
+                if (command.equals("ADD_ADMIN")) {
+                    AdminStaff adminStaff = (AdminStaff) in.readObject();
+                    DatabaseHelper.getInstance().insertAdminStaff(adminStaff);
+                } else if (command.equals("ADD_MANAGEMENT")) {
+                    ManagementStaff managementStaff = (ManagementStaff) in.readObject();
+                    DatabaseHelper.getInstance().insertManagementStaff(managementStaff);
+                }
+            } catch (EOFException e) {
+                // End of stream reached, break out of the loop
+                break;
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+                break;
+            }
         }
-        String command = (String) inputObject;
-        if (command.equals("ADD_ADMIN")) {
-            AdminStaff adminStaff = (AdminStaff) in.readObject();
-            DatabaseHelper.getInstance().insertAdminStaff(adminStaff);
-        } else if (command.equals("ADD_MANAGEMENT")) {
-            ManagementStaff managementStaff = (ManagementStaff) in.readObject();
-            DatabaseHelper.getInstance().insertManagementStaff(managementStaff);
-        }
-    } catch (EOFException e) {
-        // End of stream reached, break out of the loop
-        break;
-    } catch (IOException | ClassNotFoundException e) {
-        e.printStackTrace();
-        break;
+
     }
 }
-
-    }
-}
-
-

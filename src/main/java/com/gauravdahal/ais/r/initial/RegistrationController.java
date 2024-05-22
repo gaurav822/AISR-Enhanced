@@ -18,14 +18,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
-import java.util.regex.Pattern;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -33,32 +29,19 @@ import javafx.scene.layout.AnchorPane;
 import aisr.model.AdminStaff;
 import aisr.model.ManagementStaff;
 import client.ClientConnection;
-import database.DatabaseHelper;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.EOFException;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.ConnectException;
 import java.net.Socket;
 import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.List;
-import javafx.application.Platform;
-import javafx.concurrent.Task;
+
 /**
  * FXML Controller class
  *
  * @author gauravdahal
  */
 
- 
-
-
 public class RegistrationController implements Initializable {
-
 
     @FXML
     private AnchorPane registration;
@@ -77,7 +60,7 @@ public class RegistrationController implements Initializable {
     @FXML
     private PasswordField tfRePassword;
     @FXML
-        private TextField tfStaffId;
+    private TextField tfStaffId;
     @FXML
     private ChoiceBox<String> cBoxPosition;
     @FXML
@@ -86,83 +69,75 @@ public class RegistrationController implements Initializable {
     private ChoiceBox<String> cBoxMgmtLevel;
     @FXML
     private ChoiceBox<String> cBoxBranchName;
-    
+
     private boolean areAllFieldsValid;
     private StaffType staffType;
-    
+
     private ArrayList<AdminStaff> adminStaffs;
     private ArrayList<ManagementStaff> managementStaffs;
-    
+
     private static final String SERVER_ADDRESS = "localhost";
     private static final int SERVER_PORT = 6789;
-    
+
     private Socket socket = null;
     private ObjectOutputStream out;
     private ObjectInputStream in;
-   
-       
-    
+
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
+
         adminStaffs = new ArrayList<>();
         managementStaffs = new ArrayList<>();
         staffType = StaffType.ADMIN;
-        
+
         //setting position to choice box
         cBoxPosition.setItems(FXCollections.observableArrayList(
                 Position.FULL_TIME.label,
                 Position.PART_TIME.label,
                 Position.VOLUNTEER.label
         ));
-        
+
         //setting stafftype to choice box (admin or management)
         cBoxStaffType.setItems(FXCollections.observableArrayList(
                 StaffType.ADMIN.label,
                 StaffType.MANAGEMENT.label
         ));
-        
-        
+
         //setting management level to choice box 
-         cBoxMgmtLevel.setItems(FXCollections.observableArrayList(
+        cBoxMgmtLevel.setItems(FXCollections.observableArrayList(
                 ManagementLevel.SENIOR.label,
-                 ManagementLevel.MIDLEVEL.label,
-                 ManagementLevel.SUPERVISOR.label
+                ManagementLevel.MIDLEVEL.label,
+                ManagementLevel.SUPERVISOR.label
         ));
-         
-         cBoxBranchName.setItems(FXCollections.observableArrayList(
+
+        cBoxBranchName.setItems(FXCollections.observableArrayList(
                 BranchName.MELBOURNE.toString(),
-                 BranchName.SYDNEY.toString(),
-                 BranchName.BRISBANE.toString(),
-                 BranchName.ADELAIDE.toString()
+                BranchName.SYDNEY.toString(),
+                BranchName.BRISBANE.toString(),
+                BranchName.ADELAIDE.toString()
         ));
-         
-         
-        
-        
+
         cBoxStaffType.setOnAction(event -> {
-         String selectedStaffType = cBoxStaffType.getValue();
-           if(selectedStaffType.equals(StaffType.MANAGEMENT.label)){
-               staffType = StaffType.MANAGEMENT;
-               cBoxPosition.setDisable(true);
-               cBoxMgmtLevel.setDisable(false);
-               cBoxBranchName.setDisable(false);
-           }
-           else{
-               staffType = StaffType.ADMIN;
-               cBoxPosition.setDisable(false);
+            String selectedStaffType = cBoxStaffType.getValue();
+            if (selectedStaffType.equals(StaffType.MANAGEMENT.label)) {
+                staffType = StaffType.MANAGEMENT;
+                cBoxPosition.setDisable(true);
+                cBoxMgmtLevel.setDisable(false);
+                cBoxBranchName.setDisable(false);
+            } else {
+                staffType = StaffType.ADMIN;
+                cBoxPosition.setDisable(false);
                 cBoxMgmtLevel.setDisable(true);
-               cBoxBranchName.setDisable(true);
-           }
+                cBoxBranchName.setDisable(true);
+            }
             // You can perform any other actions based on the selected position here
         });
-        
-        
-    }    
-    
+
+    }
+
     private void saveDataToCSV() {
         try {
             File file = new File(Constants.STAFF_CSV_FILE);
@@ -172,18 +147,18 @@ public class RegistrationController implements Initializable {
                 // If it's a new file, write the header
                 writer.write("Full Name,Address,Phone Number,Email Address,Username,Password,Staff ID,Staff Type,Position,Management Level,Branch Name\n");
             }
-             
-            for(AdminStaff staff:adminStaffs){
-                String encryptedPassword = EncryptionUtils.encrypt(staff.getPassword()); 
+
+            for (AdminStaff staff : adminStaffs) {
+                String encryptedPassword = EncryptionUtils.encrypt(staff.getPassword());
                 staff.setPassword(encryptedPassword);
-               writer.write(staff.toString() + "\n");
+                writer.write(staff.toString() + "\n");
             }
-            for(ManagementStaff staff:managementStaffs){
+            for (ManagementStaff staff : managementStaffs) {
                 String encryptedPassword = EncryptionUtils.encrypt(staff.getPassword()); // Encrypt the password
-                staff.setPassword(encryptedPassword); 
-               writer.write(staff.toString() + "\n");
+                staff.setPassword(encryptedPassword);
+                writer.write(staff.toString() + "\n");
             }
-      
+
             writer.close();
             DialogUtils.showSuccessDialog("Staff's has been registered Successfully !");
             App.setRoot("login");
@@ -191,124 +166,119 @@ public class RegistrationController implements Initializable {
             DialogUtils.showErrorDialog("Error occurred while saving data to CSV file.");
         }
     }
-    
-    public  AdminStaff getAdminDetails(){
+
+    public AdminStaff getAdminDetails() {
         AdminStaff staff = new AdminStaff(tfFullName.getText(),
-                            tfAddress.getText(),
-                            tfPhoneNumber.getText(),
-                            tfEmailAddress.getText(),
-                            tfUserName.getText(),
-                            tfPassword.getText());
+                tfAddress.getText(),
+                tfPhoneNumber.getText(),
+                tfEmailAddress.getText(),
+                tfUserName.getText(),
+                tfPassword.getText());
         staff.setStaffId(tfStaffId.getText());
         staff.setPositionType(
                 Position
                         .getPositionFromLabel(cBoxPosition.getValue()));
         return staff;
     }
-    
-    public ManagementStaff getManagementStaffDetails(){
-        
+
+    public ManagementStaff getManagementStaffDetails() {
+
         ManagementStaff staff = new ManagementStaff(tfFullName.getText(),
-                            tfAddress.getText(),
-                            tfPhoneNumber.getText(),
-                            tfEmailAddress.getText(),
-                            tfUserName.getText(),
-                            tfPassword.getText());
+                tfAddress.getText(),
+                tfPhoneNumber.getText(),
+                tfEmailAddress.getText(),
+                tfUserName.getText(),
+                tfPassword.getText());
         staff.setStaffId(tfStaffId.getText());
         staff.setManagementLevel(
                 ManagementLevel
                         .getManagementFromLabel(cBoxMgmtLevel.getValue()));
         staff.setBranchName(cBoxBranchName.getValue());
         return staff;
-        
+
     }
-    
 
     @FXML
-    private void onLoginClicked(ActionEvent event)throws IOException {
+    private void onLoginClicked(ActionEvent event) throws IOException {
         App.setRoot("login");
     }
-    
-    public boolean checkForValidation(){
-        
-        if(tfFullName.getText().isEmpty()){
+
+    public boolean checkForValidation() {
+
+        if (tfFullName.getText().isEmpty()) {
             DialogUtils.showErrorDialog("Name cannot be empty");
             return false;
         }
-        
-        if(tfAddress.getText().isEmpty()){
+
+        if (tfAddress.getText().isEmpty()) {
             DialogUtils.showErrorDialog("Address cannot be empty");
             return false;
         }
-        
-        if(Utils.isNotValidNumber(tfPhoneNumber.getText())){
+
+        if (Utils.isNotValidNumber(tfPhoneNumber.getText())) {
             return false;
         }
-        
-        if(tfEmailAddress.getText().isEmpty()){
+
+        if (tfEmailAddress.getText().isEmpty()) {
             DialogUtils.showErrorDialog("Email cannot be empty");
             return false;
         }
-        
-        if(tfUserName.getText().isEmpty()){
+
+        if (tfUserName.getText().isEmpty()) {
             DialogUtils.showErrorDialog("Username cannot be empty");
             return false;
         }
-        
-        if(Utils.isNotValidPassword(tfPassword.getText(), tfRePassword.getText())){
+
+        if (Utils.isNotValidPassword(tfPassword.getText(), tfRePassword.getText())) {
             return false;
         }
-   
-        if(cBoxStaffType.getValue()==null){
-             DialogUtils.showErrorDialog("Staff Type cannot be empty");
-              return false;
+
+        if (cBoxStaffType.getValue() == null) {
+            DialogUtils.showErrorDialog("Staff Type cannot be empty");
+            return false;
         }
-        
-        if(staffType==StaffType.ADMIN){
-            if(cBoxPosition.getValue()==null){
+
+        if (staffType == StaffType.ADMIN) {
+            if (cBoxPosition.getValue() == null) {
                 DialogUtils.showErrorDialog("Please Select Position type");
                 return false;
             }
         }
-        
-        if(staffType==StaffType.MANAGEMENT){
-            if(cBoxMgmtLevel.getValue()==null){
+
+        if (staffType == StaffType.MANAGEMENT) {
+            if (cBoxMgmtLevel.getValue() == null) {
                 DialogUtils.showErrorDialog("Please Select Management Level");
-                 return false;
+                return false;
             }
-            
-            if(cBoxBranchName.getValue()==null){
+
+            if (cBoxBranchName.getValue() == null) {
                 DialogUtils.showErrorDialog("Please Select Branch Name");
                 return false;
             }
         }
-        
-      
-        
+
         return true;
     }
 
     @FXML
     private void onStaffDetailsEntered(ActionEvent event) {
-        if(checkForValidation()){
-            if(Utils.isDuplicateStaffId(tfStaffId.getText(),adminStaffs,managementStaffs)) {
+        if (checkForValidation()) {
+            if (Utils.isDuplicateStaffId(tfStaffId.getText(), adminStaffs, managementStaffs)) {
                 DialogUtils.showErrorDialog("Staff ID already exists. Please use a different Staff ID.");
                 return;
             }
-            if(staffType == StaffType.ADMIN){
+            if (staffType == StaffType.ADMIN) {
                 adminStaffs.add(getAdminDetails());
                 DialogUtils.showSuccessDialog("Admin Staff Details Added, Don't Forget to save !!!");
-            }
-            
-            else{
+            } else {
                 managementStaffs.add(getManagementStaffDetails());
                 DialogUtils.showSuccessDialog("Management Staff Details Added, Added, Don't Forget to save !!!");
             }
             clearFields();
         }
     }
-    
-    public void clearFields(){
+
+    public void clearFields() {
         tfFullName.clear();
         tfAddress.clear();
         tfPhoneNumber.clear();
@@ -321,36 +291,30 @@ public class RegistrationController implements Initializable {
         cBoxPosition.setValue(null);
         cBoxMgmtLevel.setValue(null);
         cBoxBranchName.setValue(null);
-        
+
     }
 
     @FXML
     private void onStaffDataSaved(ActionEvent event) {
-        
-        if(adminStaffs.isEmpty() && managementStaffs.isEmpty()){
+
+        if (adminStaffs.isEmpty() && managementStaffs.isEmpty()) {
             DialogUtils.showWarningDialog("Please enter the data first to arraylist");
-        }
-        
-        else{
-            try{
+        } else {
+            try {
                 sendDataToServer();
-            }
-            
-            catch(Exception e){
+            } catch (Exception e) {
                 System.out.println(e);
             }
-            
+
         }
-        
-        
+
     }
-    
-    
-private void sendDataToServer() {
-    
-     ClientConnection clientConnection = ClientConnection.getInstance();
-    
-     if (clientConnection.getSocket() == null || !clientConnection.getSocket().isConnected()) {
+
+    private void sendDataToServer() {
+
+        ClientConnection clientConnection = ClientConnection.getInstance();
+
+        if (clientConnection.getSocket() == null || !clientConnection.getSocket().isConnected()) {
             DialogUtils.showWarningDialog("Client is disconnected. Connect to the Server first");
             System.out.println("Client is disconnected. Connect to the Server first");
             return;
@@ -370,7 +334,7 @@ private void sendDataToServer() {
                 clientConnection.getOut().writeObject("ADD_MANAGEMENT"); // Send command to add management staff
                 clientConnection.getOut().writeObject(managementStaff); // Send management staff object
             }
-            
+
             clientConnection.getOut().flush();
             DialogUtils.showSuccessDialog("Staffs Registered Successfully!");
             adminStaffs.clear();
@@ -411,8 +375,7 @@ class SocketDataIn extends Thread {
                 }
 
                 //Wait for one sec so it doesn't print too fast
-            } 
-            catch (SocketException | InterruptedException e) {
+            } catch (SocketException | InterruptedException e) {
                 System.out.println("Interrupted:" + e.getMessage() + "\n");
                 break;
             } catch (IOException ex) {
@@ -420,16 +383,11 @@ class SocketDataIn extends Thread {
 //                            IO Exception: Server might have been stopped!""");
                 break;
             } catch (ClassNotFoundException ex) {
-                 System.out.println("Class Not Found:" + ex.getMessage() + "\n");
+                System.out.println("Class Not Found:" + ex.getMessage() + "\n");
                 break;
             }
-            
+
         }
     }
 
-
-
 }
-
-
-

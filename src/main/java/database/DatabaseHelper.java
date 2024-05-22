@@ -8,12 +8,9 @@ package database;
  *
  * @author gauravdahal
  */
-
 import Constants.Constants;
-import Utils.DialogUtils;
 import aisr.model.AdminStaff;
 import aisr.model.ManagementStaff;
-import aisr.model.Recruit;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -23,10 +20,10 @@ import java.sql.Statement;
 public class DatabaseHelper {
 
     private static DatabaseHelper instance;
-    private static final String DATABASE_URL = "jdbc:mysql://localhost:3306/aisrdb";
+    private static final String DATABASE_URL = "jdbc:mysql://localhost:3306";
     private static final String DATABASE_USER = "root";
-    private static final String DATABASE_PASSWORD = "gauravdahal";
-    
+    private static final String DATABASE_PASSWORD = "";
+
     private Connection connection;
 
     // Private constructor to prevent instantiation from outside
@@ -35,6 +32,7 @@ public class DatabaseHelper {
             Class.forName("com.mysql.cj.jdbc.Driver");
             connection = DriverManager.getConnection(DATABASE_URL, DATABASE_USER, DATABASE_PASSWORD);
             createDatabaseIfNotExists();
+            selectDatabase();
             createRecruitTableIfNotExists();
             createStaffTableIfNotExists();
         } catch (ClassNotFoundException | SQLException e) {
@@ -56,53 +54,61 @@ public class DatabaseHelper {
 
     // Method to create the database if it does not exist
     private void createDatabaseIfNotExists() throws SQLException {
-        try{
+        try {
             Statement statement = connection.createStatement();
             String sql = "CREATE DATABASE IF NOT EXISTS " + Constants.DATABASE_NAME;
             statement.executeUpdate(sql);
-        }
-        
-        catch(Exception e){
+        } catch (Exception e) {
             System.out.println(e);
         }
-            
+
+    }
+
+    // Method to select database
+    private void selectDatabase() throws SQLException {
+        try {
+            Statement statement = connection.createStatement();
+            String sql = "Use " + Constants.DATABASE_NAME;
+            statement.executeUpdate(sql);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
     }
 
     // Method to create the tables if they do not exist
     private void createRecruitTableIfNotExists() throws SQLException {
-       
-    String createRecruitsTable = "CREATE TABLE IF NOT EXISTS " + Constants.DATABASE_NAME + ".recruits (" +
-                    "id INT AUTO_INCREMENT PRIMARY KEY," +
-                    "fullName VARCHAR(255) NOT NULL," +
-                    "address VARCHAR(255)," +
-                    "phoneNumber VARCHAR(20)," +
-                    "emailAddress VARCHAR(255)," +
-                    "userName VARCHAR(255)," +
-                    "password VARCHAR(255)," +
-                    "interviewDate DATE," +
-                    "qualificationLevel VARCHAR(255)," +
-                    "department VARCHAR(255)," +
-                    "branch VARCHAR(255)," +
-                    "staffId VARCHAR(255)," +
-                    "staffName VARCHAR(255)," +
-                    "dateDataAdded DATE," +
-                    "staffBranch VARCHAR(255)" +
-                    ");";
+
+        String createRecruitsTable = "CREATE TABLE IF NOT EXISTS " + Constants.DATABASE_NAME + ".recruits ("
+                + "id INT AUTO_INCREMENT PRIMARY KEY,"
+                + "fullName VARCHAR(255) NOT NULL,"
+                + "address VARCHAR(255),"
+                + "phoneNumber VARCHAR(20),"
+                + "emailAddress VARCHAR(255),"
+                + "userName VARCHAR(255),"
+                + "password VARCHAR(255),"
+                + "interviewDate DATE,"
+                + "qualificationLevel VARCHAR(255),"
+                + "department VARCHAR(255),"
+                + "branch VARCHAR(255),"
+                + "staffId VARCHAR(255),"
+                + "staffName VARCHAR(255),"
+                + "dateDataAdded DATE,"
+                + "staffBranch VARCHAR(255)"
+                + ");";
 
         try (Statement statement = connection.createStatement()) {
             statement.execute(createRecruitsTable);
         } catch (SQLException e) {
             e.printStackTrace();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        
+
     }
-    
-    
-    public void createStaffTableIfNotExists() throws SQLException{
-    String createStaffTable = "CREATE TABLE IF NOT EXISTS " + Constants.DATABASE_NAME + ".staff (" 
+
+    public void createStaffTableIfNotExists() throws SQLException {
+        String createStaffTable = "CREATE TABLE IF NOT EXISTS " + Constants.DATABASE_NAME + ".staff ("
                 + "staff_id VARCHAR(255) PRIMARY KEY, "
                 + "full_name VARCHAR(255) NOT NULL, "
                 + "address VARCHAR(255) NOT NULL, "
@@ -120,14 +126,12 @@ public class DatabaseHelper {
             statement.execute(createStaffTable);
         } catch (SQLException e) {
             e.printStackTrace();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
-    
-    public void insertAdminStaff(AdminStaff adminStaff){
+
+    public void insertAdminStaff(AdminStaff adminStaff) {
         String query = "INSERT INTO staff (staff_id, full_name, address, phone_number, email_address, username, password, staff_type, position_type) VALUES (?, ?, ?, ?, ?, ?, ?, 'ADMIN', ?)";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -142,14 +146,12 @@ public class DatabaseHelper {
             statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-        }
-        
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void insertManagementStaff(ManagementStaff managementStaff){
+    public void insertManagementStaff(ManagementStaff managementStaff) {
         String query = "INSERT INTO staff (staff_id, full_name, address, phone_number, email_address, username, password, staff_type, management_level, branch_name) VALUES (?, ?, ?, ?, ?, ?, ?, 'MANAGEMENT', ?, ?)";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -165,11 +167,9 @@ public class DatabaseHelper {
             statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-        }
-        
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-    } 
-     
+    }
+
 }
