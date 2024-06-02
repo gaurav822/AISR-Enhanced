@@ -8,7 +8,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="484.0" prefWidth="633.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gauravdahal.ais.r.initial.LoginController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="551.0" prefWidth="634.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gauravdahal.ais.r.initial.LoginController">
    <children>
       <Label layoutX="155.0" layoutY="14.0" text="AIS-R-ENHANCED">
          <font>
@@ -23,7 +23,8 @@
       <Button fx:id="btnLogin" layoutX="255.0" layoutY="289.0" mnemonicParsing="false" onAction="#onLoginClicked" prefHeight="26.0" prefWidth="135.0" text="Login" />
       <Text layoutX="221.0" layoutY="95.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Employee portal for  AI - SPACE" wrappingWidth="210.9594177141837" />
       <Text layoutX="170.0" layoutY="379.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Don't have an account ?" />
-      <Button fx:id="btnRegister" layoutX="319.0" layoutY="360.0" mnemonicParsing="false" onAction="#onRegistrationClicked" prefHeight="26.0" prefWidth="135.0" text="Register" />
-      <Button fx:id="connectionButton" layoutX="263.0" layoutY="421.0" mnemonicParsing="false" onAction="#onConnect" text="Connect to Server" />
+      <Button fx:id="btnRegister" layoutX="319.0" layoutY="360.0" mnemonicParsing="false" onAction="#onRegistrationClicked" prefHeight="26.0" prefWidth="135.0" text="Staff Registration" />
+      <Button fx:id="connectionButton" layoutX="257.0" layoutY="489.0" mnemonicParsing="false" onAction="#onConnect" prefHeight="26.0" prefWidth="131.0" text="Connect to Server" />
+      <Button fx:id="btnRegister1" layoutX="259.0" layoutY="426.0" mnemonicParsing="false" onAction="#onRecruitRegistrationClicked" prefHeight="26.0" prefWidth="135.0" text="Recruit Registration" />
    </children>
 </AnchorPane>

@@ -11,6 +11,7 @@ package client;
 
 import aisr.model.AdminStaff;
 import aisr.model.ManagementStaff;
+import aisr.model.Recruit;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -118,6 +119,10 @@ class SocketDataIn extends Thread {
                 } else if ("ADD_MANAGEMENT".equals(command)) {
                     ManagementStaff managementStaff = (ManagementStaff) in.readObject();
                     System.out.println(managementStaff);
+                }
+                 else if ("ADD_RECRUIT".equals(command)) {
+                    Recruit recruit = (Recruit) in.readObject();
+                    System.out.println(recruit);
                 }
             } catch (SocketException e) {
                 if (Thread.currentThread().isInterrupted()) {

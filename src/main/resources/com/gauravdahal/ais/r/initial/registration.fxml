@@ -42,10 +42,10 @@
             <Label layoutX="97.0" layoutY="588.0" text="Management Level:" />
             <ChoiceBox fx:id="cBoxBranchName" disable="true" layoutX="210.0" layoutY="640.0" prefHeight="26.0" prefWidth="201.0" />
             <Label layoutX="94.0" layoutY="644.0" text="Branch Name:" />
-            <Button layoutX="222.0" layoutY="701.0" mnemonicParsing="false" onAction="#onStaffDetailsEntered" prefHeight="33.0" prefWidth="158.0" text="Enter Staff Details" />
+            <Button fx:id="enterStaffDetailsBtn" layoutX="201.0" layoutY="701.0" mnemonicParsing="false" onAction="#onStaffDetailsEntered" prefHeight="33.0" prefWidth="204.0" text="Enter Admin Details" />
             <Label layoutX="151.0" layoutY="831.0" text="Already have an account ?" />
             <Button layoutX="304.0" layoutY="827.0" mnemonicParsing="false" onAction="#onLoginClicked" prefHeight="21.0" prefWidth="153.0" text="Login" />
-            <Button layoutX="203.0" layoutY="761.0" mnemonicParsing="false" onAction="#onStaffDataSaved" prefHeight="33.0" prefWidth="210.0" text="Save Data" />
+            <Button fx:id="saveStaffDetailsBtn" layoutX="203.0" layoutY="761.0" mnemonicParsing="false" onAction="#onStaffDataSaved" prefHeight="33.0" prefWidth="210.0" text="Save Admin" />
          </children>
       </AnchorPane>
    </content>

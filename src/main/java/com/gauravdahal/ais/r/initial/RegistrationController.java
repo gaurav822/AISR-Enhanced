@@ -34,6 +34,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.LinkedList;
+import javafx.scene.control.Button;
 
 /**
  * FXML Controller class
@@ -73,8 +75,8 @@ public class RegistrationController implements Initializable {
     private boolean areAllFieldsValid;
     private StaffType staffType;
 
-    private ArrayList<AdminStaff> adminStaffs;
-    private ArrayList<ManagementStaff> managementStaffs;
+    private LinkedList<AdminStaff> adminStaffs;
+    private LinkedList<ManagementStaff> managementStaffs;
 
     private static final String SERVER_ADDRESS = "localhost";
     private static final int SERVER_PORT = 6789;
@@ -82,6 +84,10 @@ public class RegistrationController implements Initializable {
     private Socket socket = null;
     private ObjectOutputStream out;
     private ObjectInputStream in;
+    @FXML
+    private Button enterStaffDetailsBtn;
+    @FXML
+    private Button saveStaffDetailsBtn;
 
     /**
      * Initializes the controller class.
@@ -89,8 +95,8 @@ public class RegistrationController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
-        adminStaffs = new ArrayList<>();
-        managementStaffs = new ArrayList<>();
+        adminStaffs = new LinkedList<>();
+        managementStaffs = new LinkedList<>();
         staffType = StaffType.ADMIN;
 
         //setting position to choice box
@@ -119,6 +125,8 @@ public class RegistrationController implements Initializable {
                 BranchName.BRISBANE.toString(),
                 BranchName.ADELAIDE.toString()
         ));
+        
+        cBoxStaffType.setValue(StaffType.ADMIN.label);
 
         cBoxStaffType.setOnAction(event -> {
             String selectedStaffType = cBoxStaffType.getValue();
@@ -127,11 +135,17 @@ public class RegistrationController implements Initializable {
                 cBoxPosition.setDisable(true);
                 cBoxMgmtLevel.setDisable(false);
                 cBoxBranchName.setDisable(false);
+                enterStaffDetailsBtn.setText("Enter Management Details");
+                saveStaffDetailsBtn.setText("Save Management");
             } else {
                 staffType = StaffType.ADMIN;
                 cBoxPosition.setDisable(false);
                 cBoxMgmtLevel.setDisable(true);
                 cBoxBranchName.setDisable(true);
+                enterStaffDetailsBtn.setText("Enter Admin Details");
+                  saveStaffDetailsBtn.setText("Save Admin");
+
+
             }
             // You can perform any other actions based on the selected position here
         });

@@ -11,6 +11,7 @@ package server;
 import Utils.DialogUtils;
 import aisr.model.AdminStaff;
 import aisr.model.ManagementStaff;
+import aisr.model.Recruit;
 import database.DatabaseHelper;
 
 import java.io.*;
@@ -90,6 +91,10 @@ class Connection extends Thread {
                 } else if (command.equals("ADD_MANAGEMENT")) {
                     ManagementStaff managementStaff = (ManagementStaff) in.readObject();
                     DatabaseHelper.getInstance().insertManagementStaff(managementStaff);
+                }
+                 else if (command.equals("ADD_RECRUIT")) {
+                    Recruit recruit = (Recruit) in.readObject();
+                    DatabaseHelper.getInstance().insertRecruit(recruit);
                 }
             } catch (EOFException e) {
                 // End of stream reached, break out of the loop

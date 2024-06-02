@@ -49,6 +49,8 @@ public class LoginController implements Initializable {
     private StaffType staffType;
     @FXML
     private Button connectionButton;
+    @FXML
+    private Button btnRegister1;
     /**
      * Initializes the controller class.
      */
@@ -185,6 +187,11 @@ public class LoginController implements Initializable {
             connectionButton.setText("Connect to Server");
         }
       
+    }
+
+    @FXML
+    private void onRecruitRegistrationClicked(ActionEvent event) throws IOException {
+        App.setRoot("recruit_registration");
     }
     
 }

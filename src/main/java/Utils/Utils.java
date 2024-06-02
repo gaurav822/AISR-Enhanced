@@ -9,6 +9,7 @@ import aisr.model.ManagementStaff;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.regex.Pattern;
 
 /**
@@ -74,7 +75,7 @@ public class Utils {
     }
     
     
-     public static boolean isDuplicateStaffId(String staffId, ArrayList<AdminStaff> adminStaffs, ArrayList<ManagementStaff> managementStaffs) {
+     public static boolean isDuplicateStaffId(String staffId, LinkedList<AdminStaff> adminStaffs, LinkedList<ManagementStaff> managementStaffs) {
         for (AdminStaff adminStaff : adminStaffs) {
             if (adminStaff.getStaffId().equals(staffId)) {
                 return true;

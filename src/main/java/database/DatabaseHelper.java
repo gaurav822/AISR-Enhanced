@@ -11,6 +11,7 @@ package database;
 import Constants.Constants;
 import aisr.model.AdminStaff;
 import aisr.model.ManagementStaff;
+import aisr.model.Recruit;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -81,20 +82,20 @@ public class DatabaseHelper {
 
         String createRecruitsTable = "CREATE TABLE IF NOT EXISTS " + Constants.DATABASE_NAME + ".recruits ("
                 + "id INT AUTO_INCREMENT PRIMARY KEY,"
-                + "fullName VARCHAR(255) NOT NULL,"
+                + "full_name VARCHAR(255) NOT NULL,"
                 + "address VARCHAR(255),"
-                + "phoneNumber VARCHAR(20),"
-                + "emailAddress VARCHAR(255),"
-                + "userName VARCHAR(255),"
+                + "phone_number VARCHAR(20),"
+                + "email_address VARCHAR(255) UNIQUE,"
+                + "username VARCHAR(255),"
                 + "password VARCHAR(255),"
-                + "interviewDate DATE,"
+                + "interviewDate VARCHAR(255),"
                 + "qualificationLevel VARCHAR(255),"
                 + "department VARCHAR(255),"
                 + "branch VARCHAR(255),"
-                + "staffId VARCHAR(255),"
-                + "staffName VARCHAR(255),"
-                + "dateDataAdded DATE,"
-                + "staffBranch VARCHAR(255)"
+                + "staff_id VARCHAR(255),"
+                + "staff_name VARCHAR(255),"
+                + "date_data_added DATE,"
+                + "staff_branch VARCHAR(255)"
                 + ");";
 
         try (Statement statement = connection.createStatement()) {
@@ -109,7 +110,8 @@ public class DatabaseHelper {
 
     public void createStaffTableIfNotExists() throws SQLException {
         String createStaffTable = "CREATE TABLE IF NOT EXISTS " + Constants.DATABASE_NAME + ".staff ("
-                + "staff_id VARCHAR(255) PRIMARY KEY, "
+                + "id INT AUTO_INCREMENT PRIMARY KEY,"
+                + "staff_id VARCHAR(255), "
                 + "full_name VARCHAR(255) NOT NULL, "
                 + "address VARCHAR(255) NOT NULL, "
                 + "phone_number VARCHAR(20) NOT NULL, "
@@ -119,7 +121,7 @@ public class DatabaseHelper {
                 + "staff_type VARCHAR (255) NOT NULL, "
                 + "position_type VARCHAR(255), "
                 + "management_level VARCHAR(255), "
-                + "branch_name VARCHAR(255)"
+                + "staff_branch VARCHAR(255)"
                 + ")";
 
         try (Statement statement = connection.createStatement()) {
@@ -164,6 +166,33 @@ public class DatabaseHelper {
             statement.setString(7, managementStaff.getPassword());
             statement.setString(8, managementStaff.getManagementLevel().label);
             statement.setString(9, managementStaff.getBranchName());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+     public void insertRecruit(Recruit recruit) {
+         
+        String query = "INSERT INTO recruits (full_name, address, phone_number, email_address, username, password, interviewDate,qualificationLevel,department,branch,staff_id,staff_name,date_data_added,staff_branch) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, recruit.getFullName());
+            statement.setString(2, recruit.getAddress());
+            statement.setString(3, recruit.getPhoneNumber());
+            statement.setString(4, recruit.getEmailAddress());
+            statement.setString(5, recruit.getUserName());
+            statement.setString(6, recruit.getPassword());
+            statement.setString(7, recruit.getInterviewDate());
+            statement.setString(8, recruit.getQualificationLevel());
+            statement.setString(9, recruit.getDepartment());
+            statement.setString(10, recruit.getBranch());
+            statement.setString(11, recruit.getStaffId());
+            statement.setString(12, recruit.getStaffName());
+            statement.setString(13, recruit.getDateDataAdded());
+            statement.setString(14, recruit.getStaffBranch());
             statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
