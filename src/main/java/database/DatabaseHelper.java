@@ -9,13 +9,19 @@ package database;
  * @author gauravdahal
  */
 import Constants.Constants;
+import ENUM.ManagementLevel;
+import ENUM.Position;
+import ENUM.StaffType;
+import Utils.EncryptionUtils;
 import aisr.model.AdminStaff;
 import aisr.model.ManagementStaff;
 import aisr.model.Recruit;
+import aisr.model.Staff;
 import aisr.model.Token;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -134,8 +140,8 @@ public class DatabaseHelper {
             e.printStackTrace();
         }
     }
-    
-    public void createTokenTableIfNotExists(){
+
+    public void createTokenTableIfNotExists() {
         String createTokenTable = "CREATE TABLE IF NOT EXISTS " + Constants.DATABASE_NAME + ".tokens ("
                 + "id INT AUTO_INCREMENT PRIMARY KEY,"
                 + "recruit_email VARCHAR(255), "
@@ -150,7 +156,6 @@ public class DatabaseHelper {
             e.printStackTrace();
         }
     }
-
 
     public void insertAdminStaff(AdminStaff adminStaff) {
         String query = "INSERT INTO staff (staff_id, full_name, address, phone_number, email_address, username, password, staff_type, position_type) VALUES (?, ?, ?, ?, ?, ?, ?, 'ADMIN', ?)";
@@ -192,9 +197,9 @@ public class DatabaseHelper {
             e.printStackTrace();
         }
     }
-    
-     public void insertRecruit(Recruit recruit) {
-         
+
+    public void insertRecruit(Recruit recruit) {
+
         String query = "INSERT INTO recruits (full_name, address, phone_number, email_address, username, password, interviewDate,qualificationLevel,department,branch,staff_id,staff_name,date_data_added,staff_branch) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -219,12 +224,66 @@ public class DatabaseHelper {
             e.printStackTrace();
         }
     }
-     
-     
-     public void insertToken(Token token){
-        
-       String query = "INSERT INTO tokens (recruit_email,token_generated) VALUES (?, ?)";
-         
+
+    public Staff getManagementDetail(String email) {
+        ManagementStaff mgmtStaff = null;
+        String query = "SELECT * FROM staff WHERE email_address = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, email);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                String staffId = resultSet.getString("staff_id");
+                String fullName = resultSet.getString("full_name");
+                String address = resultSet.getString("address");
+                String phoneNumber = resultSet.getString("phone_number");
+                String username = resultSet.getString("username");
+                String password = resultSet.getString("password");
+                String managementLevel = resultSet.getString("management_level");
+                String branchName = resultSet.getString("staff_branch");
+
+                mgmtStaff = new ManagementStaff(fullName, address, phoneNumber, email, username, password);
+                mgmtStaff.setStaffId(staffId);
+                mgmtStaff.setBranchName(branchName);
+                mgmtStaff.setManagementLevel(ManagementLevel.getManagementFromLabel(managementLevel));
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return mgmtStaff;
+    }
+
+    public AdminStaff getAdminDetail(String email) {
+        AdminStaff staff = null;
+        String query = "SELECT * FROM staff WHERE email_address = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, email);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                String staffId = resultSet.getString("staff_id");
+                String fullName = resultSet.getString("full_name");
+                String address = resultSet.getString("address");
+                String phoneNumber = resultSet.getString("phone_number");
+                String username = resultSet.getString("username");
+                String password = resultSet.getString("password");
+                String positionType = resultSet.getString("position_type");
+                String managementLevel = resultSet.getString("management_level");
+                String branchName = resultSet.getString("staff_branch");
+                staff = new AdminStaff(fullName, address, phoneNumber, email, username, password);
+                staff.setStaffId(staffId);
+                staff.setPositionType(Position.getPositionFromLabel(positionType));
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return staff;
+    }
+
+    public void insertToken(Token token) {
+
+        String query = "INSERT INTO tokens (recruit_email,token_generated) VALUES (?, ?)";
+
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, token.getRecruit_email());
             statement.setString(2, token.getGenerated_token());
@@ -235,6 +294,66 @@ public class DatabaseHelper {
         } catch (Exception e) {
             e.printStackTrace();
         }
-     }
+    }
+
+    public String verifyStaff(String email, String password) {
+        // Fetch the encrypted password stored in the database
+        String staffType = verifyEmailPasswordFromStaff(email,password);
+        
+        return staffType;
+      }
+
+    public boolean verifyRecruit(String email, String encryptedPassword) {
+        // Fetch the encrypted password stored in the database
+        String storedEncryptedPassword = fetchEncryptedPasswordFromDatabase(email);
+        if (storedEncryptedPassword == null) {
+            return false; // Email not found in the database
+        }
+
+        // Decrypt the stored encrypted password
+        String decryptedStoredPassword = EncryptionUtils.decrypt(storedEncryptedPassword);
+        if (decryptedStoredPassword == null) {
+            return false; // Decryption failed, return false
+        }
+
+        // Compare the decrypted stored password with the provided encrypted password
+        return decryptedStoredPassword.equals(encryptedPassword);
+    }
+
+    private String fetchEncryptedPasswordFromDatabase(String email) {
+        String query = "SELECT password FROM recruits WHERE email_address = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, email);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getString("password");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null; // Email not found in the database
+    }
+    
+    
+    private String verifyEmailPasswordFromStaff(String email, String password) {
+        String query = "SELECT password FROM staff WHERE email_address = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, email);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                String dbPassword = resultSet.getString("password");
+                String decryptedStoredPassword = EncryptionUtils.decrypt(dbPassword);
+                if(password.equals(decryptedStoredPassword)){
+                   return resultSet.getString("staff_type");
+                }
+                else{
+                    return null;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null; // Email not found in the database
+    }
 
 }

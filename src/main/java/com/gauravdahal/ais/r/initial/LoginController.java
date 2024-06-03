@@ -13,6 +13,7 @@ import Utils.EncryptionUtils;
 import aisr.model.Recruit;
 import aisr.model.Token;
 import client.ClientConnection;
+import database.DatabaseHelper;
 import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.FileNotFoundException;
@@ -111,7 +112,7 @@ public class LoginController implements Initializable {
     }    
 
     @FXML
-    private void onLoginClicked(ActionEvent event)  {
+    private void onLoginClicked(ActionEvent event) throws IOException  {
         String email = tfEmail.getText();
         String password = tfPassword.getText();
         
@@ -132,14 +133,34 @@ public class LoginController implements Initializable {
                 DialogUtils.showWarningDialog("Please enter one time token");
             }
             else{
-                System.out.print("Recruit Login");
+                boolean isValidRecruit = DatabaseHelper.getInstance().verifyRecruit(email, password);
+                if(isValidRecruit){
+                    DialogUtils.showSuccessDialog("Login Success");
+                    App.setRoot("recruit_dashboard");
+                }
+                else{
+                 DialogUtils.showErrorDialog("Invalid Credentials");
+
+                }
 
             }
             //handle recruit login
         }
         
         else {
-             System.out.print("Staff Login");
+             String staffType = DatabaseHelper.getInstance().verifyStaff(email, password);
+                if(staffType!=null && staffType.equals("ADMIN")){
+                    DialogUtils.showSuccessDialog("Login Success");
+                    App.setRoot("admin_dashboard");
+                }
+                else if(staffType!=null && staffType.equals("MANAGEMENT")){
+                    DialogUtils.showSuccessDialog("Login Success");
+                    App.setRoot("management_dashboard");
+                }
+                else{
+                 DialogUtils.showErrorDialog("Invalid Credentials");
+
+               }
         }
     }
     
