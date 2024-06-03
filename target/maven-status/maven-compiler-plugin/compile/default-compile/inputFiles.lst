@@ -1,10 +1,12 @@
 /Users/gauravdahal/NetBeansProjects/AIS-R-Enhanced/src/main/java/Utils/EncryptionUtils.java
+/Users/gauravdahal/NetBeansProjects/AIS-R-Enhanced/src/main/java/aisr/model/Token.java
 /Users/gauravdahal/NetBeansProjects/AIS-R-Enhanced/src/main/java/com/gauravdahal/ais/r/initial/App.java
 /Users/gauravdahal/NetBeansProjects/AIS-R-Enhanced/src/main/java/ENUM/QualificationLevel.java
 /Users/gauravdahal/NetBeansProjects/AIS-R-Enhanced/src/main/java/Utils/IVGenerator.java
 /Users/gauravdahal/NetBeansProjects/AIS-R-Enhanced/src/main/java/com/gauravdahal/ais/r/initial/RegistrationController.java
 /Users/gauravdahal/NetBeansProjects/AIS-R-Enhanced/src/main/java/ENUM/BranchName.java
 /Users/gauravdahal/NetBeansProjects/AIS-R-Enhanced/src/main/java/aisr/model/Staff.java
+/Users/gauravdahal/NetBeansProjects/AIS-R-Enhanced/src/main/java/ENUM/UserType.java
 /Users/gauravdahal/NetBeansProjects/AIS-R-Enhanced/src/main/java/aisr/model/Recruit.java
 /Users/gauravdahal/NetBeansProjects/AIS-R-Enhanced/src/main/java/aisr/model/AdminStaff.java
 /Users/gauravdahal/NetBeansProjects/AIS-R-Enhanced/src/main/java/ENUM/Position.java

@@ -12,6 +12,7 @@ import Utils.DialogUtils;
 import aisr.model.AdminStaff;
 import aisr.model.ManagementStaff;
 import aisr.model.Recruit;
+import aisr.model.Token;
 import database.DatabaseHelper;
 
 import java.io.*;
@@ -96,6 +97,13 @@ class Connection extends Thread {
                     Recruit recruit = (Recruit) in.readObject();
                     DatabaseHelper.getInstance().insertRecruit(recruit);
                 }
+                
+                 else if(command.equals("SEND_TOKEN")){
+                     Token token = (Token) in.readObject();
+                     System.out.println("Token from server: "+token.getGenerated_token());
+                     DatabaseHelper.getInstance().insertToken(token);
+
+                 }
             } catch (EOFException e) {
                 // End of stream reached, break out of the loop
                 break;

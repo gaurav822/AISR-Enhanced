@@ -10,6 +10,7 @@ ENUM/BranchName.class
 com/gauravdahal/ais/r/initial/RegistrationController.class
 module-info.class
 ENUM/Position.class
+ENUM/UserType.class
 ENUM/QualificationLevel.class
 com/gauravdahal/ais/r/initial/AdminDashboardController.class
 Utils/DialogUtils.class
@@ -18,6 +19,7 @@ client/ClientConnection.class
 com/gauravdahal/ais/r/initial/App.class
 ENUM/StaffType.class
 Utils/IVGenerator.class
+aisr/model/Token.class
 aisr/model/Recruit.class
 database/DatabaseHelper.class
 ENUM/ManagementLevel.class

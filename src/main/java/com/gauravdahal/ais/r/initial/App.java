@@ -17,16 +17,37 @@ import server.MultiThreadedServer;
 public class App extends Application {
 
     private static Scene scene;
+    private static Stage primaryStage;
+
+   
 
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("login"), 640, 480);
+         primaryStage = stage;
+        // Load the FXML file and get the root node
+        Parent root = loadFXML("login");
+
+        // Create the scene with the loaded root node
+        scene = new Scene(root);
+
+        // Set the scene to the stage
         stage.setScene(scene);
+
+        // Adjust the stage size based on the root node's preferred size
+        stage.setWidth(root.prefWidth(-1));
+        stage.setHeight(root.prefHeight(-1));
+
+        // Show the stage
         stage.show();
     }
 
     static void setRoot(String fxml) throws IOException {
-        scene.setRoot(loadFXML(fxml));
+                Parent root = loadFXML(fxml);
+
+        scene.setRoot(root);
+        // Adjust the stage size based on the new root node's preferred size
+        primaryStage.setWidth(root.prefWidth(-1));
+        primaryStage.setHeight(root.prefHeight(-1));
     }
 
     private static Parent loadFXML(String fxml) throws IOException {

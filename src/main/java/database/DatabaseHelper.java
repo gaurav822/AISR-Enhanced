@@ -12,6 +12,7 @@ import Constants.Constants;
 import aisr.model.AdminStaff;
 import aisr.model.ManagementStaff;
 import aisr.model.Recruit;
+import aisr.model.Token;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -36,6 +37,7 @@ public class DatabaseHelper {
             selectDatabase();
             createRecruitTableIfNotExists();
             createStaffTableIfNotExists();
+            createTokenTableIfNotExists();
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
@@ -132,6 +134,23 @@ public class DatabaseHelper {
             e.printStackTrace();
         }
     }
+    
+    public void createTokenTableIfNotExists(){
+        String createTokenTable = "CREATE TABLE IF NOT EXISTS " + Constants.DATABASE_NAME + ".tokens ("
+                + "id INT AUTO_INCREMENT PRIMARY KEY,"
+                + "recruit_email VARCHAR(255), "
+                + "token_generated VARCHAR(255)"
+                + ")";
+
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(createTokenTable);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public void insertAdminStaff(AdminStaff adminStaff) {
         String query = "INSERT INTO staff (staff_id, full_name, address, phone_number, email_address, username, password, staff_type, position_type) VALUES (?, ?, ?, ?, ?, ?, ?, 'ADMIN', ?)";
@@ -200,5 +219,22 @@ public class DatabaseHelper {
             e.printStackTrace();
         }
     }
+     
+     
+     public void insertToken(Token token){
+        
+       String query = "INSERT INTO tokens (recruit_email,token_generated) VALUES (?, ?)";
+         
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, token.getRecruit_email());
+            statement.setString(2, token.getGenerated_token());
+            statement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+     }
 
 }
