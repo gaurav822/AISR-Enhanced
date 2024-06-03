@@ -1,6 +1,7 @@
 com/gauravdahal/ais/r/initial/EditrecruitController.class
 aisr/model/ManagementStaff.class
 com/gauravdahal/ais/r/initial/SocketDataIn.class
+aisr/model/SessionUser.class
 server/Connection.class
 com/gauravdahal/ais/r/initial/LoginController.class
 com/gauravdahal/ais/r/initial/RecruitItemManagerController.class
@@ -29,6 +30,7 @@ com/gauravdahal/ais/r/initial/EditrecruitAdminController.class
 com/gauravdahal/ais/r/initial/RecruitRegistrationController.class
 ENUM/Department.class
 Utils/DialogUtils$1.class
+session/SessionManager.class
 Constants/Constants.class
 Utils/Utils.class
 client/SocketDataIn.class

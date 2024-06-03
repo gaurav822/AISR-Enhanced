@@ -16,6 +16,7 @@ import Utils.EncryptionUtils;
 import aisr.model.AdminStaff;
 import aisr.model.ManagementStaff;
 import aisr.model.Recruit;
+import aisr.model.SessionUser;
 import aisr.model.Staff;
 import aisr.model.Token;
 import java.sql.Connection;
@@ -27,6 +28,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import session.SessionManager;
 
 public class DatabaseHelper {
 
@@ -201,7 +203,7 @@ public class DatabaseHelper {
         }
     }
 
-    public void insertRecruit(Recruit recruit) {
+    public boolean insertRecruit(Recruit recruit) {
 
         String query = "INSERT INTO recruits (full_name, address, phone_number, email_address, username, password, interviewDate,qualificationLevel,department,branch,staff_id,staff_name,date_data_added,staff_branch) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -222,10 +224,14 @@ public class DatabaseHelper {
             statement.setString(14, recruit.getStaffBranch());
             statement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            if (e.getErrorCode() == 1062) { // MySQL error code for duplicate entry
+                return true;
+            }
         } catch (Exception e) {
-            e.printStackTrace();
+           return true;
         }
+        
+        return false;
     }
 
     public ArrayList<Recruit> getRecruits() {
@@ -379,7 +385,7 @@ public class DatabaseHelper {
     }
 
     private String verifyEmailPasswordFromStaff(String email, String password) {
-        String query = "SELECT password,staff_type FROM staff WHERE email_address = ?";
+        String query = "SELECT password,staff_type,email_address FROM staff WHERE email_address = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, email);
             ResultSet resultSet = statement.executeQuery();
@@ -387,7 +393,13 @@ public class DatabaseHelper {
                 String dbPassword = resultSet.getString("password");
                 String decryptedStoredPassword = EncryptionUtils.decrypt(dbPassword);
                 if (password.equals(decryptedStoredPassword)) {
+
+                    //Creating a session object with user information
+                    SessionManager sessionManager = SessionManager.getInstance();
+                    SessionUser user = new SessionUser(email); // Assuming you have a User class
+                    sessionManager.setCurrentUser(user);
                     return resultSet.getString("staff_type");
+
                 } else {
                     return null;
                 }

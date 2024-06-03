@@ -57,7 +57,6 @@ public class EditrecruitController implements Initializable {
     private ChoiceBox<String> cBoxQualification;
     @FXML
     private DatePicker interviewDatePicker;
-    @FXML
     private Label labelDepartment;
     @FXML
     private ChoiceBox<String> choiceBoxDepart;
@@ -67,6 +66,8 @@ public class EditrecruitController implements Initializable {
     
     
     private String recruitUserName;
+    @FXML
+    private ChoiceBox<?> choiceBoxDepart1;
     
     /**
      * Initializes the controller class.
@@ -123,7 +124,6 @@ public class EditrecruitController implements Initializable {
 //
 //    }
 
-    @FXML
     private void onDepartmentAssigned(ActionEvent event) throws IOException {
         if(choiceBoxDepart.getValue()==null){
             DialogUtils.showWarningDialog("Please select the department");
@@ -136,34 +136,7 @@ public class EditrecruitController implements Initializable {
     }
     
     private void updateDepartment(String username, String newDepartment) throws IOException {
-        String line;
-
-        try (BufferedReader br = new BufferedReader(new FileReader(Constants.RECRUIT_CSV_FILE))) {
-            StringBuilder updatedCsvData = new StringBuilder();
-            String headers = br.readLine(); // Read and store the headers
-            updatedCsvData.append(headers).append("\n"); // Append headers to the updated CSV
-
-            while ((line = br.readLine()) != null) {
-                String[] staff = line.split(",");
-                String usernameFromCSV = staff[4].trim().replaceAll("^\"|\"$", ""); ; // Assuming the username is in the 5th column (index 4)
-                if (username.equals(usernameFromCSV)) {
-                    // Update the department (assuming department is in the 9th column, adjust if needed)
-                    staff[8] = newDepartment;
-                }
-                // Reconstruct the line with updated department or as it is
-                String updatedLine = String.join(",", staff);
-                updatedCsvData.append(updatedLine).append("\n");
-            }
-
-            // Write the updated CSV data back to the file
-            try (FileWriter writer = new FileWriter(Constants.RECRUIT_CSV_FILE)) {
-                writer.write(updatedCsvData.toString());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            // Handle any IO exception appropriately
-            throw e;
-        }
+        
     }
 
     @FXML

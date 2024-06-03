@@ -30,6 +30,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import aisr.model.Recruit;
+import client.ClientConnection;
+import java.io.EOFException;
 import javafx.collections.ObservableList;
 
 /**
@@ -42,7 +44,7 @@ public class ManagementDashboardController implements Initializable {
     private AnchorPane anchorPaneDashboard;
     @FXML
     private VBox recruitLayout;
-    
+
     @FXML
     private AnchorPane recruitListAnchorPane;
     @FXML
@@ -55,144 +57,102 @@ public class ManagementDashboardController implements Initializable {
     private ChoiceBox<String> cboxRecruits;
     @FXML
     private ChoiceBox<String> cBoxUniversity;
-    
+
     private ObservableList<Recruit> mRecruits;
     @FXML
     private Label labelRecruitNotFound;
-    
+
+    private static ManagementDashboardController instance;
+
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
-    }    
-    
+        instance = this;
+        requestDataFromServer("GET_RECRUITS", null);// Set the instance
 
-    
+    }
+
     public void navigateBackToOriginalView() {
         // Replace the content of anchorPaneDashboard with the original content
-        
 
-       
     }
 
     @FXML
     private void showRecruitList(Event event) {
-       
-       recruitLayout.getChildren().clear();
-       try{
-       mRecruits = readRecruitsFromCSV(Constants.RECRUIT_CSV_FILE);
-       labelRecruitNotFound.setVisible(false);
-       for(int i=0;i<mRecruits.size();i++){
-       
-           FXMLLoader loader = new FXMLLoader(App.class.getResource("recruititem_manager.fxml")); 
-          
-           HBox hbox = loader.load();
-           RecruitItemManagerController controller = loader.getController();
-           controller.setData(mRecruits.get(i));
-           recruitLayout.getChildren().add(hbox);
-//           
-          
-       }
-       
-       } 
-       
-       catch(FileNotFoundException e){
-             labelRecruitNotFound.setVisible(true);
-              System.out.println("File not found");
-           
-       }
-       
-       catch(IOException e){
-              System.out.println("IOException Occured");
-           
-       }
+
+        requestDataFromServer("GET_RECRUITS", null);// Set the instance
     }
-   
-    
-    
-public ObservableList<Recruit> readRecruitsFromCSV(String filePath) throws IOException {
-        ObservableList<Recruit> recruits = FXCollections.observableArrayList();
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            boolean isFirstLine = true; // Flag to skip the header line
-            while ((line = br.readLine()) != null) {
-                if (isFirstLine) {
-                    isFirstLine = false;
-                    continue; // Skip the header line
-                }
-                String[] data = line.split(","); // Assuming CSV fields are comma-separated
-                if (data.length == 14) { // Ensure correct number of fields
-                    String fullName = data[0].trim().replaceAll("^\"|\"$", "");
-                    String address = data[1].trim().replaceAll("^\"|\"$", "");
-                    String phoneNumber = data[2].trim().replaceAll("^\"|\"$", "");
-                    String emailAddress = data[3].trim().replaceAll("^\"|\"$", "");
-                    String userName = data[4].trim().replaceAll("^\"|\"$", "");
-                    String password = data[5].trim().replaceAll("^\"|\"$", "");
-                    String interviewDate = data[6].trim().replaceAll("^\"|\"$", "");
-                    String qualificationLevel = data[7].trim().replaceAll("^\"|\"$", "");
-                    String department = data[8].trim().replaceAll("^\"|\"$", "");
-                    String branch = data[9].trim().replaceAll("^\"|\"$", "");
-                    String staffId = data[10].trim().replaceAll("^\"|\"$", "");
-                    String staffName = data[11].trim().replaceAll("^\"|\"$", "");
-                    String dateDataAdded = data[12].trim().replaceAll("^\"|\"$", "");
-                    String staffBranch = data[13].trim().replaceAll("^\"|\"$", "");
-                    
-                    // Create Recruit object and add it to the list
-                    Recruit recruit = new Recruit(fullName, address, phoneNumber, emailAddress, userName, password);
-                    recruit.setInterviewDate(interviewDate);
-                    recruit.setQualificationLevel(qualificationLevel);
-                    recruit.setDepartment(department);
-                    recruit.setBranch(branch);
-                    recruit.setStaffId(staffId);
-                    recruit.setStaffName(staffName);
-                    recruit.setDateDataAdded(dateDataAdded);
-                    recruit.setStaffBranch(staffBranch);
-                    
-                    recruits.add(recruit);
-                }
+
+    private void requestDataFromServer(String requestObject, String email) {
+        ClientConnection clientConnection = ClientConnection.getInstance();
+        try {
+            clientConnection.getOut().writeObject(requestObject);
+            if (email != null && !email.isEmpty()) {
+                clientConnection.getOut().writeObject(email);
             }
-        } 
-        
-         catch (FileNotFoundException e) {
-            // Handle file not found exception
-            throw e;
-         }
-        
-        catch (IOException e) {
-            throw e; 
+            clientConnection.getOut().flush();
+        } catch (EOFException e) {
+            DialogUtils.showErrorDialog(e.getMessage());
+            System.out.println("EOF: " + e.getMessage());
+        } catch (IOException e) {
+            DialogUtils.showErrorDialog(e.getMessage());
+            System.out.println("readline: " + e.getMessage());
         }
-        
-        return recruits;
     }
-    
-    public boolean validateStudentIdForQualification(String studentId){
-        if(studentId.isEmpty()){
+
+    public static void updateRecruitTable(ArrayList<Recruit> recruits) {
+
+        if(instance!=null){
+        instance.recruitLayout.getChildren().clear();
+        try {
+            instance.labelRecruitNotFound.setVisible(false);
+            for (int i = 0; i < recruits.size(); i++) {
+
+                FXMLLoader loader = new FXMLLoader(App.class.getResource("recruititem_manager.fxml"));
+
+                HBox hbox = loader.load();
+                RecruitItemManagerController controller = loader.getController();
+                controller.setData(recruits.get(i));
+                instance.recruitLayout.getChildren().add(hbox);
+//           
+
+            }
+
+        } catch (IOException e) {
+            System.out.println("IOException Occured");
+
+        }
+        }
+
+    }
+
+    public boolean validateStudentIdForQualification(String studentId) {
+        if (studentId.isEmpty()) {
             return false;
         }
-        
+
         return studentId.length() >= 5;
     }
-    
-     public boolean validateUniversityForQualification(String university){
-       if(university==null || university.isEmpty()){
-           return false;
-       }
-       return true;
+
+    public boolean validateUniversityForQualification(String university) {
+        if (university == null || university.isEmpty()) {
+            return false;
+        }
+        return true;
     }
-    
-    
-    public boolean validateRecruitUserNameForQualification(String userName){
-        if(userName==null || userName.isEmpty()){
-           return false;
-       }
-       return true;
+
+    public boolean validateRecruitUserNameForQualification(String userName) {
+        if (userName == null || userName.isEmpty()) {
+            return false;
+        }
+        return true;
     }
 
     @FXML
     private void showProfile(Event event) {
-        
+
     }
 
     @FXML
@@ -207,26 +167,26 @@ public ObservableList<Recruit> readRecruitsFromCSV(String filePath) throws IOExc
 
     @FXML
     private void onVerificationStarted(ActionEvent event) {
-        
-        if(validateStudentIdForQualification(tfStudentId.getText()) && validateUniversityForQualification(cBoxUniversity.getValue()) && 
-                validateRecruitUserNameForQualification(cboxRecruits.getValue())){
-           
-            DialogUtils.showGenerateReport("Verifying Qualification","Qualification Verified");
+
+        if (validateStudentIdForQualification(tfStudentId.getText()) && validateUniversityForQualification(cBoxUniversity.getValue())
+                && validateRecruitUserNameForQualification(cboxRecruits.getValue())) {
+
+            DialogUtils.showGenerateReport("Verifying Qualification", "Qualification Verified");
 
         }
-        
+
     }
 
     @FXML
     private void onAccountUpdate(ActionEvent event) {
-          
-       DialogUtils.showSuccessDialog("Profile Updated Successfully");
+
+        DialogUtils.showSuccessDialog("Profile Updated Successfully");
 
     }
 
     @FXML
     private void onPasswordChange(ActionEvent event) {
-         DialogUtils.showSuccessDialog("Password Changed Successfully");
+        DialogUtils.showSuccessDialog("Password Changed Successfully");
     }
 
     @FXML
@@ -237,15 +197,14 @@ public ObservableList<Recruit> readRecruitsFromCSV(String filePath) throws IOExc
 
     @FXML
     private void showQualVerification(Event event) {
-       
-        
-        if(mRecruits!=null && !mRecruits.isEmpty()){
+
+        if (mRecruits != null && !mRecruits.isEmpty()) {
             List<String> recruitNames = mRecruits.stream()
-                                   .map(Recruit::getUserName) // Assuming 'getName' is the method to get the name from Recruit class
-                                   .collect(Collectors.toList());
+                    .map(Recruit::getUserName) // Assuming 'getName' is the method to get the name from Recruit class
+                    .collect(Collectors.toList());
             cboxRecruits.setItems(FXCollections.observableArrayList(recruitNames));
         }
-     
+
         cBoxUniversity.setItems(FXCollections.observableArrayList(
                 "CQUniversity",
                 "Macquire University",
@@ -253,9 +212,7 @@ public ObservableList<Recruit> readRecruitsFromCSV(String filePath) throws IOExc
                 "Western Sydney University",
                 "Victorial University"
         ));
-        
+
     }
-    
-    
 
 }

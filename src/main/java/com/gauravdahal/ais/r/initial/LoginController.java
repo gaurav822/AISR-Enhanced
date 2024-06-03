@@ -208,13 +208,6 @@ public class LoginController implements Initializable {
         }
     }
 
-    private void verifyLoginFromServer(String email) {
-        if (!isClientConnected()) {
-            return;
-        }
-
-    }
-
     private boolean isClientConnected() {
         clientConnection = ClientConnection.getInstance();
 

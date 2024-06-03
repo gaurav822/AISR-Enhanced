@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="NewDetailsAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gauravdahal.ais.r.initial.AddrecruitController">
+<AnchorPane fx:id="NewDetailsAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="776.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gauravdahal.ais.r.initial.AddrecruitController">
          <children>
             <Label layoutX="173.0" layoutY="56.0" text="New Recruit Details">
                <font>
@@ -36,8 +36,8 @@
             <DatePicker fx:id="dPInterViewDate" editable="false" layoutX="209.0" layoutY="444.0" onAction="#onDatePicked" promptText="29/03/2024" />
             <Button layoutX="210.0" layoutY="549.0" mnemonicParsing="false" onAction="#onFilesChoosed" text="Choose files" />
             <Label layoutX="104.0" layoutY="554.0" text="Documents:" />
-            <Button layoutX="228.0" layoutY="629.0" mnemonicParsing="false" onAction="#onDataEntered" prefHeight="26.0" prefWidth="134.0" text="Enter Data" />
-      <Button layoutX="202.0" layoutY="687.0" mnemonicParsing="false" onAction="#onDataSaved" prefHeight="26.0" prefWidth="186.0" text="Save Data" />
+            <Button layoutX="195.0" layoutY="630.0" mnemonicParsing="false" onAction="#onDataEntered" prefHeight="32.0" prefWidth="178.0" text="Enter Recruit Details" />
+      <Button layoutX="191.0" layoutY="687.0" mnemonicParsing="false" onAction="#onDataSaved" prefHeight="32.0" prefWidth="190.0" text="Save Recruit" />
       <Button fx:id="btnBack" layoutX="34.0" layoutY="34.0" mnemonicParsing="false" onAction="#handleBackBtn" prefHeight="27.0" prefWidth="77.0" text="&lt;- Back" />
          </children>
 </AnchorPane>

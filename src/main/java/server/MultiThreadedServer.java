@@ -94,39 +94,50 @@ class Connection extends Thread {
                 } else if (command.equals("ADD_MANAGEMENT")) {
                     ManagementStaff managementStaff = (ManagementStaff) in.readObject();
                     DatabaseHelper.getInstance().insertManagementStaff(managementStaff);
-                }
-                 else if (command.equals("ADD_RECRUIT")) {
+                } else if (command.equals("ADD_RECRUIT")) {
                     Recruit recruit = (Recruit) in.readObject();
-                    DatabaseHelper.getInstance().insertRecruit(recruit);
+                    boolean isDuplicateEntry = DatabaseHelper.getInstance().insertRecruit(recruit);
+                    out.writeObject("ADD_RECRUIT_RESPONSE");
+                    out.writeObject(isDuplicateEntry);
+                    out.writeObject(recruit.getEmailAddress());
+                    out.flush();
+
+                } else if (command.equals("ADD_RECRUIT_BATCH")) {
+                    ArrayList<Recruit> recruits = (ArrayList<Recruit>) in.readObject();
+                    for (Recruit recruit : recruits) {
+                        boolean isDuplicateEntry = DatabaseHelper.getInstance().insertRecruit(recruit);
+                        out.writeObject("ADD_RECRUIT_BATCH_RESPONSE");
+                        out.writeObject(isDuplicateEntry);
+                        out.writeObject(recruit.getEmailAddress());
+                    }
+                    out.flush();
+                } else if (command.equals("SEND_TOKEN")) {
+                    Token token = (Token) in.readObject();
+                    System.out.println("Token from server: " + token.getGenerated_token());
+                    DatabaseHelper.getInstance().insertToken(token);
+                } else if (command.equals("VERIFY_LOGIN_Recruit")) {
+
+                } else if (command.equals("VERIFY_LOGIN_Staff")) {
+                    String email = (String) in.readObject();
+                    String password = (String) in.readObject();
+
+                    String staffType = DatabaseHelper.getInstance().verifyStaff(email, password);
+                    out.writeObject("STAFF_TYPE");
+                    out.writeObject(staffType);
+                    out.flush();
+                } else if (command.equals("GET_RECRUITS")) {
+                    ArrayList<Recruit> recruits = DatabaseHelper.getInstance().getRecruits();
+                    out.writeObject("RECRUIT_LIST");
+                    out.writeObject(recruits);
+                    out.flush();
+                } else if (command.equals("GET_ADMIN_INFO")) {
+                    String email = (String) in.readObject();
+                    AdminStaff adminStaff = DatabaseHelper.getInstance().getAdminDetail(email);
+                    out.writeObject("GET_ADMIN_INFO");
+                    out.writeObject(adminStaff);
+                    out.flush();
                 }
-                
-                 else if(command.equals("SEND_TOKEN")){
-                     Token token = (Token) in.readObject();
-                     System.out.println("Token from server: "+token.getGenerated_token());
-                     DatabaseHelper.getInstance().insertToken(token);
-                 }
-                 
-                 else if(command.equals("VERIFY_LOGIN_Recruit")){
-                     
-                 }
-                 
-                 else if(command.equals("VERIFY_LOGIN_Staff")){
-                     String email = (String) in.readObject();
-                     String password = (String) in.readObject();
-                  
-                     String staffType = DatabaseHelper.getInstance().verifyStaff(email, password);
-                     out.writeObject("STAFF_TYPE");
-                     out.writeObject(staffType);
-                     out.flush();
-                 }
-                 
-                else if(command.equals("GET_RECRUITS")){
-                     ArrayList<Recruit> recruits = DatabaseHelper.getInstance().getRecruits();
-                     out.writeObject("RECRUIT_LIST");
-                     out.writeObject(recruits);
-                     out.flush();
-                 }
-               
+
             } catch (EOFException e) {
                 // End of stream reached, break out of the loop
                 break;

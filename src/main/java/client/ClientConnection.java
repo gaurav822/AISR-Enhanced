@@ -11,8 +11,11 @@ package client;
 import aisr.model.AdminStaff;
 import aisr.model.ManagementStaff;
 import aisr.model.Recruit;
+import com.gauravdahal.ais.r.initial.AddrecruitController;
 import com.gauravdahal.ais.r.initial.AdminDashboardController;
 import com.gauravdahal.ais.r.initial.LoginController;
+import com.gauravdahal.ais.r.initial.ManagementDashboardController;
+import com.gauravdahal.ais.r.initial.RecruitRegistrationController;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -102,6 +105,7 @@ public class ClientConnection {
     public ObjectInputStream getIn() {
         return in;
     }
+
 }
 
 class SocketDataIn extends Thread {
@@ -130,15 +134,12 @@ class SocketDataIn extends Thread {
                 } else if ("RECRUIT_LIST".equals(command)) {
                     try {
                         ArrayList<Recruit> recruits = (ArrayList<Recruit>) in.readObject();
-                        System.out.println("The client recruits are "+recruits);
-
-                        AdminDashboardController.updateRecruitTable(recruits); // Update the table view
+                        AdminDashboardController.updateRecruitTable(recruits);
+                        ManagementDashboardController.updateRecruitTable(recruits);// Update the table view
                     } catch (ClassNotFoundException e) {
                         System.out.println("Class not found: " + e.getMessage());
                     }
-                }
-                
-                else if ("STAFF_TYPE".equals(command)) {
+                } else if ("STAFF_TYPE".equals(command)) {
                     try {
                         String staffType = (String) in.readObject();
                         Platform.runLater(() -> {
@@ -151,7 +152,41 @@ class SocketDataIn extends Thread {
                     } catch (ClassNotFoundException e) {
                         System.out.println("Class not found: " + e.getMessage());
                     }
+                } else if ("GET_ADMIN_INFO".equals(command)) {
+                    try {
+                        AdminStaff adminStaff = (AdminStaff) in.readObject();
+                        AdminDashboardController.setAdminStaff(adminStaff); // Update the table view
+                    } catch (ClassNotFoundException e) {
+                        System.out.println("Class not found: " + e.getMessage());
+                    }
+                } else if ("ADD_RECRUIT_RESPONSE".equals(command)) {
+
+                    try {
+                        boolean isDuplicateEmail = (boolean) in.readObject();
+                        String email = (String) in.readObject();
+
+                        Platform.runLater(() -> {
+                            RecruitRegistrationController.onResponseFromServer(isDuplicateEmail, email);
+                        });
+                    } catch (ClassNotFoundException e) {
+                        System.out.println("Class not found: " + e.getMessage());
+                    }
+                } else if ("ADD_RECRUIT_BATCH_RESPONSE".equals(command)) {
+
+                    try {
+
+                        boolean isDuplicateEmail = (boolean) in.readObject();
+                        String email = (String) in.readObject();
+                        Platform.runLater(() -> {
+                            AddrecruitController.onResponseFromServer(isDuplicateEmail, email);
+                        });
+
+                    } catch (ClassNotFoundException e) {
+                        System.out.println("Class not found: " + e.getMessage());
+                    }
+
                 }
+
             } catch (SocketException e) {
                 if (Thread.currentThread().isInterrupted()) {
                     System.out.println("Socket closed, stopping data input thread.");
