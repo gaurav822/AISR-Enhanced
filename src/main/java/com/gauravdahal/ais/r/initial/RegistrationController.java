@@ -152,34 +152,6 @@ public class RegistrationController implements Initializable {
 
     }
 
-    private void saveDataToCSV() {
-        try {
-            File file = new File(Constants.STAFF_CSV_FILE);
-            boolean isNewFile = !file.exists();
-            FileWriter writer = new FileWriter(file, true); // true for append mode
-            if (isNewFile) {
-                // If it's a new file, write the header
-                writer.write("Full Name,Address,Phone Number,Email Address,Username,Password,Staff ID,Staff Type,Position,Management Level,Branch Name\n");
-            }
-
-            for (AdminStaff staff : adminStaffs) {
-                String encryptedPassword = EncryptionUtils.encrypt(staff.getPassword());
-                staff.setPassword(encryptedPassword);
-                writer.write(staff.toString() + "\n");
-            }
-            for (ManagementStaff staff : managementStaffs) {
-                String encryptedPassword = EncryptionUtils.encrypt(staff.getPassword()); // Encrypt the password
-                staff.setPassword(encryptedPassword);
-                writer.write(staff.toString() + "\n");
-            }
-
-            writer.close();
-            DialogUtils.showSuccessDialog("Staff's has been registered Successfully !");
-            App.setRoot("login");
-        } catch (IOException e) {
-            DialogUtils.showErrorDialog("Error occurred while saving data to CSV file.");
-        }
-    }
 
     public AdminStaff getAdminDetails() {
         AdminStaff staff = new AdminStaff(tfFullName.getText(),
@@ -301,7 +273,6 @@ public class RegistrationController implements Initializable {
         tfPassword.clear();
         tfRePassword.clear();
         tfStaffId.clear();
-        cBoxStaffType.setValue(StaffType.ADMIN.label);
         cBoxPosition.setValue(null);
         cBoxMgmtLevel.setValue(null);
         cBoxBranchName.setValue(null);

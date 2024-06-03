@@ -8,10 +8,11 @@ package client;
  *
  * @author gauravdahal
  */
-
 import aisr.model.AdminStaff;
 import aisr.model.ManagementStaff;
 import aisr.model.Recruit;
+import com.gauravdahal.ais.r.initial.AdminDashboardController;
+import com.gauravdahal.ais.r.initial.LoginController;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -20,6 +21,9 @@ import java.net.ConnectException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import javafx.application.Platform;
+import javafx.collections.ObservableList;
 
 public class ClientConnection {
 
@@ -72,10 +76,10 @@ public class ClientConnection {
 
     private void disconnect() {
         try {
-            
+
             if (socketDataIn != null) {
                 socketDataIn.interrupt(); // Interrupt the data reading thread
-                
+
             }
             if (socket != null) {
                 socket.close();
@@ -101,6 +105,7 @@ public class ClientConnection {
 }
 
 class SocketDataIn extends Thread {
+
     private final ObjectInputStream in;
 
     public SocketDataIn(ObjectInputStream in) {
@@ -119,10 +124,33 @@ class SocketDataIn extends Thread {
                 } else if ("ADD_MANAGEMENT".equals(command)) {
                     ManagementStaff managementStaff = (ManagementStaff) in.readObject();
                     System.out.println(managementStaff);
-                }
-                 else if ("ADD_RECRUIT".equals(command)) {
+                } else if ("ADD_RECRUIT".equals(command)) {
                     Recruit recruit = (Recruit) in.readObject();
                     System.out.println(recruit);
+                } else if ("RECRUIT_LIST".equals(command)) {
+                    try {
+                        ArrayList<Recruit> recruits = (ArrayList<Recruit>) in.readObject();
+                        System.out.println("The client recruits are "+recruits);
+
+                        AdminDashboardController.updateRecruitTable(recruits); // Update the table view
+                    } catch (ClassNotFoundException e) {
+                        System.out.println("Class not found: " + e.getMessage());
+                    }
+                }
+                
+                else if ("STAFF_TYPE".equals(command)) {
+                    try {
+                        String staffType = (String) in.readObject();
+                        Platform.runLater(() -> {
+                            try {
+                                LoginController.navigateToStaffDashboard(staffType); // Update the table view on FX thread
+                            } catch (IOException e) {
+                                System.out.println("I/O error: " + e.getMessage());
+                            }
+                        });
+                    } catch (ClassNotFoundException e) {
+                        System.out.println("Class not found: " + e.getMessage());
+                    }
                 }
             } catch (SocketException e) {
                 if (Thread.currentThread().isInterrupted()) {
@@ -144,5 +172,3 @@ class SocketDataIn extends Thread {
         }
     }
 }
-
-

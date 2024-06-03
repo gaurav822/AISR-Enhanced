@@ -24,6 +24,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 public class DatabaseHelper {
 
@@ -178,7 +181,7 @@ public class DatabaseHelper {
     }
 
     public void insertManagementStaff(ManagementStaff managementStaff) {
-        String query = "INSERT INTO staff (staff_id, full_name, address, phone_number, email_address, username, password, staff_type, management_level, branch_name) VALUES (?, ?, ?, ?, ?, ?, ?, 'MANAGEMENT', ?, ?)";
+        String query = "INSERT INTO staff (staff_id, full_name, address, phone_number, email_address, username, password, staff_type, management_level, staff_branch) VALUES (?, ?, ?, ?, ?, ?, ?, 'MANAGEMENT', ?, ?)";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, managementStaff.getStaffId());
@@ -223,6 +226,47 @@ public class DatabaseHelper {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public ArrayList<Recruit> getRecruits() {
+        ArrayList<Recruit> recruits = new ArrayList<Recruit>();
+        String query = "SELECT * FROM recruits";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                String fullName = resultSet.getString("full_name");
+                String address = resultSet.getString("address");
+                String phoneNumber = resultSet.getString("phone_number");
+                String emailAddress = resultSet.getString("email_address");
+                String username = resultSet.getString("username");
+                String password = resultSet.getString("password");
+                String interviewDate = resultSet.getString("interviewDate");
+                String qualificationLevel = resultSet.getString("qualificationLevel");
+                String department = resultSet.getString("department");
+                String branch = resultSet.getString("branch");
+                String staffId = resultSet.getString("staff_id");
+                String staffName = resultSet.getString("staff_name");
+                String dateDataAdded = resultSet.getString("date_data_added");
+                String staffBranch = resultSet.getString("staff_branch");
+
+                Recruit recruit = new Recruit(fullName, address, phoneNumber, emailAddress, username, password);
+                recruit.setInterviewDate(interviewDate);
+                recruit.setQualificationLevel(qualificationLevel);
+                recruit.setDepartment(department);
+                recruit.setBranch(branch);
+                recruit.setStaffId(staffId);
+                recruit.setStaffName(staffName);
+                recruit.setDateDataAdded(dateDataAdded);
+                recruit.setStaffBranch(staffBranch);
+
+                recruits.add(recruit);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return recruits;
     }
 
     public Staff getManagementDetail(String email) {
@@ -298,10 +342,10 @@ public class DatabaseHelper {
 
     public String verifyStaff(String email, String password) {
         // Fetch the encrypted password stored in the database
-        String staffType = verifyEmailPasswordFromStaff(email,password);
-        
+        String staffType = verifyEmailPasswordFromStaff(email, password);
+
         return staffType;
-      }
+    }
 
     public boolean verifyRecruit(String email, String encryptedPassword) {
         // Fetch the encrypted password stored in the database
@@ -333,20 +377,18 @@ public class DatabaseHelper {
         }
         return null; // Email not found in the database
     }
-    
-    
+
     private String verifyEmailPasswordFromStaff(String email, String password) {
-        String query = "SELECT password FROM staff WHERE email_address = ?";
+        String query = "SELECT password,staff_type FROM staff WHERE email_address = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, email);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 String dbPassword = resultSet.getString("password");
                 String decryptedStoredPassword = EncryptionUtils.decrypt(dbPassword);
-                if(password.equals(decryptedStoredPassword)){
-                   return resultSet.getString("staff_type");
-                }
-                else{
+                if (password.equals(decryptedStoredPassword)) {
+                    return resultSet.getString("staff_type");
+                } else {
                     return null;
                 }
             }

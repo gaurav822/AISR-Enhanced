@@ -54,7 +54,7 @@ public class LoginController implements Initializable {
 
     @FXML
     private Button btnRegister;
-    
+
     private UserType selectedUserType;
     private StaffType staffType;
     @FXML
@@ -70,27 +70,29 @@ public class LoginController implements Initializable {
     /**
      * Initializes the controller class.
      */
-    
+
     private boolean isTokenRequested = false;
-  
-    
+
+    private ClientConnection clientConnection;
+
+    private static LoginController instance;
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
+        instance = this;
         //set choicebox user login type
         selectedUserType = UserType.Staff;
         cBoxUserType.setItems(FXCollections.observableArrayList(
                 UserType.Staff.label,
-                 UserType.Recruit.label
+                UserType.Recruit.label
         ));
-        
-        if(ClientConnection.getInstance().getSocket()!=null){
-             connectionButton.setText("Disconnect from Server");
+
+        if (ClientConnection.getInstance().getSocket() != null) {
+            connectionButton.setText("Disconnect from Server");
+        } else {
+            connectionButton.setText("Connect to Server");
         }
-        else{
-             connectionButton.setText("Connect to Server");
-        }
-        
+
         cBoxUserType.setValue(UserType.Staff.label);
 
         cBoxUserType.setOnAction(event -> {
@@ -98,82 +100,80 @@ public class LoginController implements Initializable {
             if (userType.equals(UserType.Staff.label)) {
                 hideTokenFields();
                 selectedUserType = UserType.Staff;
-          
+
             } else {
                 showTokenFields();
                 selectedUserType = UserType.Recruit;
             }
             // You can perform any other actions based on the selected position here
         });
-        
-        
-        
-        
-    }    
+
+    }
 
     @FXML
-    private void onLoginClicked(ActionEvent event) throws IOException  {
+    private void onLoginClicked(ActionEvent event) throws IOException {
         String email = tfEmail.getText();
         String password = tfPassword.getText();
-        
-        if(!emailPassValid(email,password)){
+
+        if (!emailPassValid(email, password)) {
             DialogUtils.showWarningDialog("Email or Password cannot be blank");
             return;
         }
-        
-        
-        if(selectedUserType.equals(UserType.Recruit) && !isTokenRequested){
+
+        if (selectedUserType.equals(UserType.Recruit) && !isTokenRequested) {
             sendTokenToServer(tfEmail.getText());
             return;
         }
-        
-        if(selectedUserType.equals(UserType.Recruit) && isTokenRequested){
-            
-            if(tfoneTimeToken.getText().isEmpty()){
+
+        if (selectedUserType.equals(UserType.Recruit) && isTokenRequested) {
+
+            if (tfoneTimeToken.getText().isEmpty()) {
                 DialogUtils.showWarningDialog("Please enter one time token");
-            }
-            else{
+            } else {
                 boolean isValidRecruit = DatabaseHelper.getInstance().verifyRecruit(email, password);
-                if(isValidRecruit){
+                if (isValidRecruit) {
                     DialogUtils.showSuccessDialog("Login Success");
                     App.setRoot("recruit_dashboard");
-                }
-                else{
-                 DialogUtils.showErrorDialog("Invalid Credentials");
+                } else {
+                    DialogUtils.showErrorDialog("Invalid Credentials");
 
                 }
 
             }
             //handle recruit login
-        }
-        
-        else {
-             String staffType = DatabaseHelper.getInstance().verifyStaff(email, password);
-                if(staffType!=null && staffType.equals("ADMIN")){
-                    DialogUtils.showSuccessDialog("Login Success");
-                    App.setRoot("admin_dashboard");
-                }
-                else if(staffType!=null && staffType.equals("MANAGEMENT")){
-                    DialogUtils.showSuccessDialog("Login Success");
-                    App.setRoot("management_dashboard");
-                }
-                else{
-                 DialogUtils.showErrorDialog("Invalid Credentials");
+        } else {
 
-               }
+            //handle staff login
+            if (!isClientConnected()) {
+                return;
+            }
+
+            verifyLogin(email, password, UserType.Staff);
+
         }
     }
-    
-    
-    private void sendTokenToServer(String email) {
-        ClientConnection clientConnection = ClientConnection.getInstance();
 
-        if (clientConnection.getSocket() == null || !clientConnection.getSocket().isConnected()) {
-            DialogUtils.showWarningDialog("Client is disconnected. Connect to the Server first");
-            System.out.println("Client is disconnected. Connect to the Server first");
-            return;
+    public static void navigateToStaffDashboard(String staffType) throws IOException {
+        
+        if(instance!=null){
+            if (staffType != null && staffType.equals("ADMIN")) {
+            DialogUtils.showSuccessDialog("Login Success");
+            App.setRoot("admin_dashboard");
+        } else if (staffType != null && staffType.equals("MANAGEMENT")) {
+            DialogUtils.showSuccessDialog("Login Success");
+            App.setRoot("management_dashboard");
+        } else {
+            DialogUtils.showErrorDialog("Invalid Credentials");
+        }
         }
         
+    }
+
+    private void sendTokenToServer(String email) {
+        if (!isClientConnected()) {
+            return;
+        }
+
         try {
             clientConnection.getOut().writeObject("SEND_TOKEN"); // Send command to add admin staff
             clientConnection.getOut().writeObject(new Token(email)); // Send admin staff object
@@ -191,74 +191,61 @@ public class LoginController implements Initializable {
             System.out.println("readline: " + e.getMessage());
         }
     }
-    
+
+    private void verifyLogin(String email, String password, UserType userType) {
+        try {
+            clientConnection.getOut().writeObject("VERIFY_LOGIN_" + userType.toString()); // Send command to add admin staff
+            clientConnection.getOut().writeObject(email); // Send admin staff object
+            clientConnection.getOut().writeObject(password); // Send admin staff object
+            clientConnection.getOut().flush();
+            tfoneTimeToken.clear();
+        } catch (EOFException e) {
+            DialogUtils.showErrorDialog(e.getMessage());
+            System.out.println("EOF: " + e.getMessage());
+        } catch (IOException e) {
+            DialogUtils.showErrorDialog(e.getMessage());
+            System.out.println("readline: " + e.getMessage());
+        }
+    }
+
+    private void verifyLoginFromServer(String email) {
+        if (!isClientConnected()) {
+            return;
+        }
+
+    }
+
+    private boolean isClientConnected() {
+        clientConnection = ClientConnection.getInstance();
+
+        if (clientConnection.getSocket() == null || !clientConnection.getSocket().isConnected()) {
+            DialogUtils.showWarningDialog("Client is disconnected. Connect to the Server first");
+            System.out.println("Client is disconnected. Connect to the Server first");
+            return false;
+        }
+
+        return true;
+    }
+
     @FXML
     private void onRegistrationClicked(ActionEvent event) throws IOException {
         App.setRoot("registration");
     }
-     
-    
-     /**
+
+    /**
      * Validates email and password fields.
-     * 
-     * @param email    The email entered by the user.
+     *
+     * @param email The email entered by the user.
      * @param password The password entered by the user.
      * @return True if email and password are valid, false otherwise.
      */
-     public boolean emailPassValid(String email,String password){
-        if(email.isEmpty()) return false;
-        
+    public boolean emailPassValid(String email, String password) {
+        if (email.isEmpty()) {
+            return false;
+        }
+
         return !password.isEmpty();
     }
-     
-    /**
-     * Authenticates user credentials.
-     * 
-     * @param email    The email entered by the user.
-     * @param password The password entered by the user.
-     * @return True if authentication is successful, false otherwise.
-     * @throws IOException If an I/O error occurs while reading the staff data.
-     */
-    private boolean authenticate(String email, String password) throws IOException {
-        String line = "";  
-        String splitBy = ",";  
-
-        try (BufferedReader br = new BufferedReader(new FileReader(Constants.STAFF_CSV_FILE))) {
-        // Skip the first line (assumed to be headers)
-         br.readLine(); 
-
-            while ((line = br.readLine()) != null) {
-             String[] staff = line.split(splitBy); 
-
-              String emailFromCSV = staff[3].trim().replaceAll("^\"|\"$", ""); // Remove leading and trailing quotes
-               String passwordFromCSV = staff[5].trim().replaceAll("\"", "");
-
-         
-
-                if (email.equals(emailFromCSV) && password.equals(EncryptionUtils.decrypt(passwordFromCSV))) {
-                 if(staff[7].trim().replaceAll("^\"|\"$", "").equals(StaffType.ADMIN.label)){
-                    staffType = StaffType.ADMIN;
-                 }
-                
-                else{
-                    staffType = StaffType.MANAGEMENT;
-                }
-                return true;
-            } 
-        }
-    } 
-        catch(FileNotFoundException e){
-            throw e;
-        }
-        catch (IOException e) {
-        // Handle any IO exception appropriately
-        throw e;
-    }
-
-    // No matching credentials found, return false
-    return false;
-    }
-    
 
     private void showAlert(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
@@ -272,32 +259,31 @@ public class LoginController implements Initializable {
     private void onConnect(ActionEvent event) {
         ClientConnection clientConnection = ClientConnection.getInstance();
         boolean isConnected = clientConnection.toggleConnection();
-        if(isConnected){
+        if (isConnected) {
             connectionButton.setText("Disconnect from Server");
-        }
-        else{
+        } else {
             connectionButton.setText("Connect to Server");
         }
-      
+
     }
 
     @FXML
     private void onRecruitRegistrationClicked(ActionEvent event) throws IOException {
         App.setRoot("recruit_registration");
     }
-    
-    private void showTokenFields(){
-        if(!isTokenRequested){
-           btnLogin.setText("Request Token");
+
+    private void showTokenFields() {
+        if (!isTokenRequested) {
+            btnLogin.setText("Request Token");
         }
         labelToken.setVisible(true);
         tfoneTimeToken.setVisible(true);
     }
-    
-    private void hideTokenFields(){
+
+    private void hideTokenFields() {
         btnLogin.setText("Login");
         labelToken.setVisible(false);
         tfoneTimeToken.setVisible(false);
     }
-    
+
 }

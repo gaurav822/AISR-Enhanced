@@ -18,8 +18,10 @@ import database.DatabaseHelper;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.collections.ObservableList;
 
 public class MultiThreadedServer {
 
@@ -102,8 +104,29 @@ class Connection extends Thread {
                      Token token = (Token) in.readObject();
                      System.out.println("Token from server: "+token.getGenerated_token());
                      DatabaseHelper.getInstance().insertToken(token);
-
                  }
+                 
+                 else if(command.equals("VERIFY_LOGIN_Recruit")){
+                     
+                 }
+                 
+                 else if(command.equals("VERIFY_LOGIN_Staff")){
+                     String email = (String) in.readObject();
+                     String password = (String) in.readObject();
+                  
+                     String staffType = DatabaseHelper.getInstance().verifyStaff(email, password);
+                     out.writeObject("STAFF_TYPE");
+                     out.writeObject(staffType);
+                     out.flush();
+                 }
+                 
+                else if(command.equals("GET_RECRUITS")){
+                     ArrayList<Recruit> recruits = DatabaseHelper.getInstance().getRecruits();
+                     out.writeObject("RECRUIT_LIST");
+                     out.writeObject(recruits);
+                     out.flush();
+                 }
+               
             } catch (EOFException e) {
                 // End of stream reached, break out of the loop
                 break;

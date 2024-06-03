@@ -32,6 +32,10 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import aisr.model.Recruit;
+import aisr.model.Token;
+import client.ClientConnection;
+import database.DatabaseHelper;
+import java.io.EOFException;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
@@ -65,6 +69,9 @@ public class AdminDashboardController implements Initializable {
     @FXML
     private TableColumn<Recruit, String> columnUserName = new TableColumn<>("Username");
     
+    private static AdminDashboardController instance;
+
+    
     
     /**
      * Initializes the controller class.
@@ -78,6 +85,9 @@ public class AdminDashboardController implements Initializable {
          
          //setup factory
          setupRowFactoryForRecruit();
+         instance = this; 
+         requestDataFromServer("GET_RECRUITS",null);// Set the instance
+
         
     }    
     
@@ -87,7 +97,12 @@ public class AdminDashboardController implements Initializable {
         App.setRoot("addrecruit");
     }
 
-   
+    public static void updateRecruitTable(ArrayList<Recruit> recruits) {
+        if (instance != null) {
+            ObservableList<Recruit> observableRecruits = FXCollections.observableArrayList(recruits);
+            instance.tableViewRecruit.setItems(observableRecruits);
+        }
+    }
     
     
     private void setupRecruitTable() {
@@ -111,9 +126,8 @@ public class AdminDashboardController implements Initializable {
     @FXML
     private void showRecruitList(Event event) throws IOException {
        
+//        requestRecruitsFromServer();
 
-       ObservableList<Recruit> recruits = (readRecruitsFromCSV(Constants.RECRUIT_CSV_FILE));  
-       tableViewRecruit.setItems(recruits);
     }
     
     private void setupRowFactoryForRecruit() {
@@ -148,64 +162,29 @@ public class AdminDashboardController implements Initializable {
    
     
     
-    public static ObservableList<Recruit> readRecruitsFromCSV(String filePath) throws IOException {
-        ObservableList<Recruit> recruits = FXCollections.observableArrayList();
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            boolean isFirstLine = true; // Flag to skip the header line
-            while ((line = br.readLine()) != null) {
-                if (isFirstLine) {
-                    isFirstLine = false;
-                    continue; // Skip the header line
-                }
-                String[] data = line.split(","); // Assuming CSV fields are comma-separated
-                if (data.length == 14) { // Ensure correct number of fields
-                    String fullName = data[0].trim().replaceAll("^\"|\"$", "");
-                    String address = data[1].trim().replaceAll("^\"|\"$", "");
-                    String phoneNumber = data[2].trim().replaceAll("^\"|\"$", "");
-                    String emailAddress = data[3].trim().replaceAll("^\"|\"$", "");
-                    String userName = data[4].trim().replaceAll("^\"|\"$", "");
-                    String password = data[5].trim().replaceAll("^\"|\"$", "");
-                    String interviewDate = data[6].trim().replaceAll("^\"|\"$", "");
-                    String qualificationLevel = data[7].trim().replaceAll("^\"|\"$", "");
-                    String department = data[8].trim().replaceAll("^\"|\"$", "");
-                    String branch = data[9].trim().replaceAll("^\"|\"$", "");
-                    String staffId = data[10].trim().replaceAll("^\"|\"$", "");
-                    String staffName = data[11].trim().replaceAll("^\"|\"$", "");
-                    String dateDataAdded = data[12].trim().replaceAll("^\"|\"$", "");
-                    String staffBranch = data[13].trim().replaceAll("^\"|\"$", "");
-                    
-                    // Create Recruit object and add it to the list
-                    Recruit recruit = new Recruit(fullName, address, phoneNumber, emailAddress, userName, password);
-                    recruit.setInterviewDate(interviewDate);
-                    recruit.setQualificationLevel(qualificationLevel);
-                    recruit.setDepartment(department);
-                    recruit.setBranch(branch);
-                    recruit.setStaffId(staffId);
-                    recruit.setStaffName(staffName);
-                    recruit.setDateDataAdded(dateDataAdded);
-                    recruit.setStaffBranch(staffBranch);
-                    
-                    recruits.add(recruit);
-                }
+    
+    
+    private void requestDataFromServer(String requestObject,String email) {
+        ClientConnection clientConnection = ClientConnection.getInstance(); 
+        try {
+            clientConnection.getOut().writeObject(requestObject);
+            if(email!=null && !email.isEmpty()){
+              clientConnection.getOut().writeObject(email);
             }
-        } 
-        
-         catch (FileNotFoundException e) {
-             throw e;
-     }
-        
-        
-        catch (IOException e) {
-           throw e;
+            clientConnection.getOut().flush();
+        } catch (EOFException e) {
+            DialogUtils.showErrorDialog(e.getMessage());
+            System.out.println("EOF: " + e.getMessage());
+        } catch (IOException e) {
+            DialogUtils.showErrorDialog(e.getMessage());
+            System.out.println("readline: " + e.getMessage());
         }
-        
-        return recruits;
     }
+    
 
     @FXML
     private void showProfile(Event event) {
-        
+//        requestDataFromServer("ADMIN_PROFILE","");
     }
 
     @FXML
