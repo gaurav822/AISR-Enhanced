@@ -5,6 +5,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import ENUM.QualificationLevel;
+import Utils.EncryptionUtils;
 import aisr.model.Recruit;
 import client.ClientConnection;
 import java.io.ByteArrayInputStream;
@@ -14,6 +15,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.sql.Connection;
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -23,13 +25,18 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Button;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import session.SessionManager;
 
@@ -49,8 +56,6 @@ public class RecruitDashboardController implements Initializable {
     @FXML
     private Label usernameLabel;
     @FXML
-    private Label passwordLabel;
-    @FXML
     private Label interviewDateLabel;
     @FXML
     private Label qualificationLevelLabel;
@@ -66,8 +71,6 @@ public class RecruitDashboardController implements Initializable {
     private TextField emailField;
     @FXML
     private TextField usernameField;
-    @FXML
-    private PasswordField passwordField;
     @FXML
     private DatePicker interviewDatePicker;
     @FXML
@@ -86,6 +89,10 @@ public class RecruitDashboardController implements Initializable {
     private TextArea bioTextArea;
     @FXML
     private Button downloadButton;
+    @FXML
+    private Button changePasswordButton;
+    @FXML
+    private Button logoutButton;
 
     private Connection connection;
     private ClientConnection clientConnection;
@@ -120,7 +127,6 @@ public class RecruitDashboardController implements Initializable {
             phoneNumberLabel.setText(currentRecruit.getPhoneNumber());
             emailLabel.setText(currentRecruit.getEmailAddress());
             usernameLabel.setText(currentRecruit.getUserName());
-            passwordLabel.setText("*******");
             interviewDateLabel.setText(currentRecruit.getInterviewDate());
             qualificationLevelLabel.setText(currentRecruit.getQualificationLevel());
 
@@ -152,7 +158,7 @@ public class RecruitDashboardController implements Initializable {
                 phoneNumberField.getText(),
                 emailField.getText(),
                 usernameField.getText(),
-                passwordField.getText(),
+                "",
                 qualificationLevelComboBox.getValue().toString(),
                 "",
                 imageData);
@@ -176,6 +182,119 @@ public class RecruitDashboardController implements Initializable {
     }
 
     /**
+     * Handles the action of clicking the change password button.
+     */
+    @FXML
+    private void handleChangePasswordAction() throws ClassNotFoundException {
+        showChangePasswordDialog();
+    }
+
+    /**
+     * Shows the change password dialog.
+     */
+    private void showChangePasswordDialog() throws ClassNotFoundException {
+        DialogPane dialogPane = new DialogPane();
+        dialogPane.setContentText("Change Password");
+
+        PasswordField newPasswordField = new PasswordField();
+        newPasswordField.setPromptText("New Password");
+
+        PasswordField repeatPasswordField = new PasswordField();
+        repeatPasswordField.setPromptText("Repeat New Password");
+
+        dialogPane.setContent(new VBox(10, new Label("New Password:"), newPasswordField, new Label("Repeat New Password:"), repeatPasswordField));
+
+        dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        Alert alert = new Alert(Alert.AlertType.NONE);
+        alert.setDialogPane(dialogPane);
+        alert.setTitle("Change Password");
+        alert.setHeaderText(null);
+        alert.initModality(Modality.WINDOW_MODAL);
+        alert.initOwner(changePasswordButton.getScene().getWindow());
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            String newPassword = newPasswordField.getText();
+            String repeatPassword = repeatPasswordField.getText();
+
+            if (!newPassword.equals(repeatPassword)) {
+                showAlert("Error", "New password and repeat password do not match.");
+                return;
+            }
+
+            // Update the password
+            updatePassword(newPassword);
+        }
+    }
+
+    /**
+     * Updates the recruit's password.
+     *
+     * @param newPassword the new password.
+     */
+    private void updatePassword(String newPassword) throws ClassNotFoundException {
+        try {
+            String encryptedPassword = EncryptionUtils.encrypt(newPassword);
+            currentRecruit.setPassword(encryptedPassword);
+            clientConnection.getOut().writeObject("UPDATE_RECRUIT_PASSWORD");
+            clientConnection.getOut().writeObject(currentRecruit);
+            clientConnection.getOut().flush();
+        } catch (IOException e) {
+            showAlert("Error", "Failed to update password.");
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Handles the response after attempting to update the password.
+     *
+     * @param updateSuccess true if the update was successful, false otherwise.
+     */
+    public static void handlePasswordUpdateResponse(boolean updateSuccess) {
+        if (updateSuccess) {
+            showAlert("Success", "Password updated successfully.");
+        } else {
+            showAlert("Error", "Failed to update password.");
+        }
+    }
+
+    /**
+     * Handles the response after attempting to update the recruit data.
+     *
+     * @param updateSuccess true if the update was successful, false otherwise.
+     */
+    public static void handleRecruitUpdateResponse(boolean updateSuccess) {
+        if (updateSuccess) {
+            showAlert("Success", "Recruit data updated successfully.");
+        } else {
+            showAlert("Error", "Failed to update recruit data.");
+        }
+    }
+
+    /**
+     * Shows an alert with the given title and message.
+     *
+     * @param title the title of the alert.
+     * @param message the message of the alert.
+     */
+    private static void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    /**
+     * Handles the action of clicking the logout button.
+     */
+    @FXML
+    private void handleLogoutAction() {
+        // Implement your logout logic here
+    }
+
+    /**
      * Toggles the edit mode of the form.
      *
      * @param isEditMode true to enable edit mode, false to disable.
@@ -186,7 +305,6 @@ public class RecruitDashboardController implements Initializable {
         phoneNumberField.setVisible(isEditMode);
         emailField.setVisible(isEditMode);
         usernameField.setVisible(isEditMode);
-        passwordField.setVisible(isEditMode);
         interviewDatePicker.setVisible(isEditMode);
         qualificationLevelComboBox.setVisible(isEditMode);
         bioTextArea.setVisible(isEditMode);
@@ -197,7 +315,6 @@ public class RecruitDashboardController implements Initializable {
         phoneNumberLabel.setVisible(!isEditMode);
         emailLabel.setVisible(!isEditMode);
         usernameLabel.setVisible(!isEditMode);
-        passwordLabel.setVisible(!isEditMode);
         interviewDateLabel.setVisible(!isEditMode);
         qualificationLevelLabel.setVisible(!isEditMode);
         bioText.setVisible(!isEditMode);

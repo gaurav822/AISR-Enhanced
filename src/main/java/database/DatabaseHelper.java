@@ -393,6 +393,8 @@ public class DatabaseHelper {
             if (resultSet.next()) {
                 String dbPassword = resultSet.getString("password");
                 String decryptedStoredPassword = EncryptionUtils.decrypt(dbPassword);
+                System.out.println(decryptedStoredPassword);
+                System.out.println(password);
                 if (password.equals(decryptedStoredPassword)) {
 
                     // Creating a session object with user information
@@ -412,7 +414,7 @@ public class DatabaseHelper {
     }
 
     public boolean updateRecruit(Recruit recruitToUpdate) {
-        String query = "UPDATE recruits SET bio = ?, full_name = ?, address = ?, phone_number = ?, email_address = ?, username = ?, password = ?, qualification_level = ?, image_data = ? WHERE email_address = ?";
+        String query = "UPDATE recruits SET bio = ?, full_name = ?, address = ?, phone_number = ?, email_address = ?, username = ?, qualification_level = ?, image_data = ? WHERE email_address = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, recruitToUpdate.getBio());
             statement.setString(2, recruitToUpdate.getFullName());
@@ -420,12 +422,24 @@ public class DatabaseHelper {
             statement.setString(4, recruitToUpdate.getPhoneNumber());
             statement.setString(5, recruitToUpdate.getEmailAddress());
             statement.setString(6, recruitToUpdate.getUserName());
-            statement.setString(7, recruitToUpdate.getPassword());
-            statement.setString(8, recruitToUpdate.getQualificationLevel());
+            statement.setString(7, recruitToUpdate.getQualificationLevel());
             Blob imageDataBlob = connection.createBlob();
             imageDataBlob.setBytes(1, recruitToUpdate.getImageData());
-            statement.setBlob(9, imageDataBlob);
-            statement.setString(10, recruitToUpdate.getEmailAddress());
+            statement.setBlob(8, imageDataBlob);
+            statement.setString(9, recruitToUpdate.getEmailAddress());
+            int rowsUpdated = statement.executeUpdate();
+            return rowsUpdated > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean updateRecruitPassword(Recruit recruitToUpdate) {
+        String query = "UPDATE recruits SET password = ? WHERE email_address = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, recruitToUpdate.getPassword());
+            statement.setString(2, recruitToUpdate.getEmailAddress());
             int rowsUpdated = statement.executeUpdate();
             return rowsUpdated > 0;
         } catch (SQLException e) {

@@ -12,8 +12,8 @@ import com.gauravdahal.ais.r.initial.AddrecruitController;
 import com.gauravdahal.ais.r.initial.AdminDashboardController;
 import com.gauravdahal.ais.r.initial.LoginController;
 import com.gauravdahal.ais.r.initial.ManagementDashboardController;
+import com.gauravdahal.ais.r.initial.RecruitDashboardController;
 import com.gauravdahal.ais.r.initial.RecruitRegistrationController;
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import session.SessionManager;
 
 public class ClientConnection {
@@ -122,92 +121,91 @@ class SocketDataIn extends Thread {
             try {
                 Object obj = in.readObject();
                 String command = (String) obj;
-                if ("ADD_ADMIN".equals(command)) {
-                    AdminStaff adminStaff = (AdminStaff) in.readObject();
-                    System.out.println(adminStaff);
-                } else if ("ADD_MANAGEMENT".equals(command)) {
-                    ManagementStaff managementStaff = (ManagementStaff) in.readObject();
-                    System.out.println(managementStaff);
-                } else if ("ADD_RECRUIT".equals(command)) {
-                    Recruit recruit = (Recruit) in.readObject();
-                    System.out.println(recruit);
-                } else if ("RECRUIT_LIST".equals(command)) {
-                    try {
+
+                switch (command) {
+                    case "ADD_ADMIN":
+                        AdminStaff adminStaff = (AdminStaff) in.readObject();
+                        System.out.println(adminStaff);
+                        break;
+
+                    case "ADD_MANAGEMENT":
+                        ManagementStaff managementStaff = (ManagementStaff) in.readObject();
+                        System.out.println(managementStaff);
+                        break;
+
+                    case "ADD_RECRUIT":
+                        Recruit recruit = (Recruit) in.readObject();
+                        System.out.println(recruit);
+                        break;
+
+                    case "RECRUIT_LIST":
                         ArrayList<Recruit> recruits = (ArrayList<Recruit>) in.readObject();
-                        AdminDashboardController.updateRecruitTable(recruits);
-                        ManagementDashboardController.updateRecruitTable(recruits);// Update the table view
-                    } catch (ClassNotFoundException e) {
-                        System.out.println("Class not found: " + e.getMessage());
-                    }
-                } else if ("STAFF_TYPE".equals(command)) {
-                    try {
+                        Platform.runLater(() -> {
+                            AdminDashboardController.updateRecruitTable(recruits);
+                            ManagementDashboardController.updateRecruitTable(recruits);
+                        });
+                        break;
+
+                    case "STAFF_TYPE":
                         String staffType = (String) in.readObject();
                         Platform.runLater(() -> {
                             try {
-                                LoginController.navigateToStaffDashboard(staffType); // Update the table view on FX
-                                // thread
+                                LoginController.navigateToStaffDashboard(staffType);
                             } catch (IOException e) {
                                 System.out.println("I/O error: " + e.getMessage());
                             }
                         });
-                    } catch (ClassNotFoundException e) {
-                        System.out.println("Class not found: " + e.getMessage());
-                    }
-                } else if ("GET_ADMIN_INFO".equals(command)) {
-                    try {
-                        AdminStaff adminStaff = (AdminStaff) in.readObject();
-                        AdminDashboardController.setAdminStaff(adminStaff); // Update the table view
-                    } catch (ClassNotFoundException e) {
-                        System.out.println("Class not found: " + e.getMessage());
-                    }
-                } else if ("ADD_RECRUIT_RESPONSE".equals(command)) {
+                        break;
 
-                    try {
+                    case "GET_ADMIN_INFO":
+                        AdminStaff adminInfo = (AdminStaff) in.readObject();
+                        Platform.runLater(() -> AdminDashboardController.setAdminStaff(adminInfo));
+                        break;
+
+                    case "ADD_RECRUIT_RESPONSE":
                         boolean isDuplicateEmail = (boolean) in.readObject();
                         String email = (String) in.readObject();
+                        Platform.runLater(() -> RecruitRegistrationController.onResponseFromServer(isDuplicateEmail, email));
+                        break;
 
+                    case "ADD_RECRUIT_BATCH_RESPONSE":
+                        boolean isDuplicateBatchEmail = (boolean) in.readObject();
+                        String batchEmail = (String) in.readObject();
+                        Platform.runLater(() -> AddrecruitController.onResponseFromServer(isDuplicateBatchEmail, batchEmail));
+                        break;
+
+                    case "RECRUIT_LOGIN_SUCCESS":
+                        Recruit loginRecruit = (Recruit) in.readObject();
+                        SessionManager sessionManager = SessionManager.getInstance();
+                        SessionUser user = new SessionUser(loginRecruit.getEmailAddress(), loginRecruit);
+                        sessionManager.setCurrentUser(user);
                         Platform.runLater(() -> {
-                            RecruitRegistrationController.onResponseFromServer(isDuplicateEmail, email);
+                            try {
+                                LoginController.handleRecruitLoginSuccess();
+                            } catch (IOException ex) {
+                                Logger.getLogger(SocketDataIn.class.getName()).log(Level.SEVERE, null, ex);
+                            }
                         });
-                    } catch (ClassNotFoundException e) {
-                        System.out.println("Class not found: " + e.getMessage());
-                    }
-                } else if ("ADD_RECRUIT_BATCH_RESPONSE".equals(command)) {
+                        break;
 
-                    try {
+                    case "RECRUIT_LOGIN_FAILED":
+                        Platform.runLater(LoginController::handleRecruitLoginFailed);
+                        break;
 
-                        boolean isDuplicateEmail = (boolean) in.readObject();
-                        String email = (String) in.readObject();
-                        Platform.runLater(() -> {
-                            AddrecruitController.onResponseFromServer(isDuplicateEmail, email);
-                        });
+                    case "UPDATE_RECRUIT_PASSWORD_RESPONSE":
+                        boolean updateSuccess = (boolean) in.readObject();
+                        Platform.runLater(() -> RecruitDashboardController.handlePasswordUpdateResponse(updateSuccess));
+                        break;
 
-                    } catch (ClassNotFoundException e) {
-                        System.out.println("Class not found: " + e.getMessage());
-                    }
+                    case "UPDATE_RECRUIT_PASSWORD":
+                        boolean recruitUpdateSuccess = (boolean) in.readObject();
+                        Platform.runLater(() -> RecruitDashboardController.handleRecruitUpdateResponse(recruitUpdateSuccess));
+                        break;
 
-                } else if ("RECRUIT_LOGIN_SUCCESS".equals(command)) {
-                    Recruit recruit = (Recruit) in.readObject();
-
-                    SessionManager sessionManager = SessionManager.getInstance();
-                    SessionUser user = new SessionUser(recruit.getEmailAddress(), recruit); // Assuming you have a User class
-                    sessionManager.setCurrentUser(user);
-
-                    Platform.runLater(() -> {
-                        try {
-                            LoginController.handleRecruitLoginSuccess();
-                        } catch (IOException ex) {
-                            Logger.getLogger(SocketDataIn.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-
-                    });
-
-                } else if ("RECRUIT_LOGIN_FAILED".equals(command)) {
-                    Platform.runLater(() -> {
-                        LoginController.handleRecruitLoginFailed();
-                    });
+                    default:
+                        System.out.println("Unknown command: " + command);
+                        break;
                 }
-
             } catch (SocketException e) {
                 if (Thread.currentThread().isInterrupted()) {
                     System.out.println("Socket closed, stopping data input thread.");

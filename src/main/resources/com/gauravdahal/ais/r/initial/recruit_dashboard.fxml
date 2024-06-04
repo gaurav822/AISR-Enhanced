@@ -6,14 +6,13 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane id="AnchorPane" prefHeight="800.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gauravdahal.ais.r.initial.RecruitDashboardController">
+<AnchorPane id="AnchorPane" prefHeight="700.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gauravdahal.ais.r.initial.RecruitDashboardController">
     <children>
         <Label layoutX="276.0" layoutY="7.0" text="Recruit Information">
             <font>
@@ -29,8 +28,8 @@
         <Button fx:id="uploadButton" layoutX="355.0" layoutY="210.0" onAction="#handleUploadAction" text="Upload Image" visible="false" />
         
         <Label layoutX="325.0" layoutY="250.0" text="Bio:" />
-        <Text layoutX="425.0" layoutY="250.0" strokeType="OUTSIDE" strokeWidth="0.0" text=""  fx:id="bioText" wrappingWidth="350.0" />    
-        <TextArea fx:id="bioTextArea" layoutX="425.0" layoutY="250.0" prefHeight="40.0" prefRowCount="3" prefWidth="350.0" promptText="Enter Bio..." visible="false" wrapText="true" />
+        <Text fx:id="bioText" layoutX="425.0" layoutY="250.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" wrappingWidth="350.0" />    
+        <TextArea fx:id="bioTextArea" layoutX="425.0" layoutY="250.0" prefHeight="40.0" prefRowCount="4" prefWidth="250.0" promptText="Enter Bio..." visible="false" wrapText="true" />
 
         <Label layoutX="325.0" layoutY="320.0" text="Full Name:" />
         <Label fx:id="fullNameLabel" layoutX="425.0" layoutY="320.0" />
@@ -52,23 +51,21 @@
         <Label fx:id="usernameLabel" layoutX="425.0" layoutY="480.0" />
         <TextField fx:id="usernameField" layoutX="425.0" layoutY="480.0" visible="false" />
 
-        <Label layoutX="325.0" layoutY="520.0" text="Password:" />
-        <Label fx:id="passwordLabel" layoutX="425.0" layoutY="520.0" /> 
-        <PasswordField fx:id="passwordField" layoutX="425.0" layoutY="520.0" visible="false" />
 
+        <Label layoutX="325.0" layoutY="520.0" text="Interview Date:" />
+        <Label fx:id="interviewDateLabel" layoutX="425.0" layoutY="520.0" />
+        <DatePicker fx:id="interviewDatePicker" layoutX="425.0" layoutY="520.0" visible="false" />
 
-        <Label layoutX="325.0" layoutY="560.0" text="Interview Date:" />
-        <Label fx:id="interviewDateLabel" layoutX="425.0" layoutY="560.0" />
-        <DatePicker fx:id="interviewDatePicker" layoutX="425.0" layoutY="560.0" visible="false" />
+        <Label layoutX="325.0" layoutY="560.0" text="Qualification Level:" />
+        <Label fx:id="qualificationLevelLabel" layoutX="425.0" layoutY="560.0" />
+        <ComboBox fx:id="qualificationLevelComboBox" layoutX="425.0" layoutY="560.0" visible="false" />
 
-        <Label layoutX="325.0" layoutY="600.0" text="Qualification Level:" />
-        <Label fx:id="qualificationLevelLabel" layoutX="425.0" layoutY="600.0" />
-        <ComboBox fx:id="qualificationLevelComboBox" layoutX="425.0" layoutY="600.0" visible="false" />
-
-        <Button fx:id="editButton" layoutX="325.0" layoutY="640.0" onAction="#handleEditAction" text="Edit" />
-        <Button fx:id="downloadButton" layoutX="525.0" layoutY="640.0" onAction="#handleDownloadPDFAction" text="Download" />
-        <Button fx:id="saveButton" layoutX="325.0" layoutY="640.0" onAction="#handleSaveAction" text="Save" visible="false" />
-        <Button fx:id="cancelButton" layoutX="525.0" layoutY="640.0" onAction="#handleCancelAction" text="Cancel" visible="false" />
-       
+        <Button fx:id="editButton" layoutX="325.0" layoutY="600.0" onAction="#handleEditAction" prefHeight="25.0" prefWidth="71.0" text="Edit" />
+        <Button fx:id="downloadButton" layoutX="415.0" layoutY="600.0" onAction="#handleDownloadPDFAction" text="Download CV" />
+        <Button fx:id="saveButton" layoutX="325.0" layoutY="600.0" onAction="#handleSaveAction" prefHeight="25.0" prefWidth="71.0" text="Save" visible="false" />
+        <Button fx:id="cancelButton" layoutX="415.0" layoutY="600.0" onAction="#handleCancelAction" prefHeight="25.0" prefWidth="71.0" text="Cancel" visible="false" />
+        <Button fx:id="changePasswordButton" layoutX="600.0" layoutY="14.0" onAction="#handleChangePasswordAction" text="Change Password" />
+        <Button fx:id="logoutButton" layoutX="721.0" layoutY="14.0" onAction="#handleLogoutAction" text="Logout" />
+   
     </children>
 </AnchorPane>
