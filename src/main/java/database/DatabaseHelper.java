@@ -247,7 +247,7 @@ public class DatabaseHelper {
                 String emailAddress = resultSet.getString("email_address");
                 String username = resultSet.getString("username");
                 String password = resultSet.getString("password");
-                String interviewDate = resultSet.getString("interview _date");
+                String interviewDate = resultSet.getString("interview_date");
                 String qualificationLevel = resultSet.getString("qualification_level");
                 String department = resultSet.getString("department");
                 String branch = resultSet.getString("branch");
