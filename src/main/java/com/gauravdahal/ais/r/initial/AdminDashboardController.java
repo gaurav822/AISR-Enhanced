@@ -27,6 +27,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import logger.Logger;
 import session.SessionManager;
 
 /**
@@ -203,6 +204,7 @@ public class AdminDashboardController implements Initializable {
 
     @FXML
     private void onLogout(ActionEvent event) throws IOException {
+        Logger.log("LOGOUT SUCCESS : "+adminStaff.getFullName()+" : "+adminStaff.getStaffId());
         SessionManager.getInstance().setCurrentUser(null);
         DialogUtils.showSuccessDialog("Logout Successful");
         App.setRoot("login");
@@ -210,13 +212,13 @@ public class AdminDashboardController implements Initializable {
 
     @FXML
     private void onProfileUpdate(ActionEvent event) {
-
-        DialogUtils.showSuccessDialog("Profile Updated Successfully");
+      Logger.log("PROFILE UPDATED : "+adminStaff.getFullName()+" : "+adminStaff.getStaffId());
+      DialogUtils.showSuccessDialog("Profile Updated Successfully");
     }
 
     @FXML
     private void onPasswordChange(ActionEvent event) {
-
+        Logger.log("PASSWORD CHANGED : "+adminStaff.getFullName()+" : "+adminStaff.getStaffId());
         DialogUtils.showSuccessDialog("Password Changed Successfully");
     }
 

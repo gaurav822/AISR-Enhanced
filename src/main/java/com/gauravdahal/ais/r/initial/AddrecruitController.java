@@ -22,6 +22,7 @@ import javafx.scene.layout.AnchorPane;
 import aisr.model.AdminStaff;
 import aisr.model.Recruit;
 import client.ClientConnection;
+import logger.Logger;
 
 /**
  * FXML Controller class
@@ -120,13 +121,15 @@ public class AddrecruitController implements Initializable {
     public static void onResponseFromServer(boolean isDuplicateEntry, String email) {
         if (instance != null) {
             if (isDuplicateEntry) {
+                Logger.log("DUPLICATE RECRUIT WITH EMAIL "+email+" FOUND ON REGISTRATION : "+instance.adminStaff.getFullName()+" : "+instance.adminStaff.getStaffId());
                 DialogUtils.showErrorDialog("Recruit with email " + email + " already exists!");
             }
             
             else{
+            Logger.log("RECRUIT WITH EMAIL "+email+" REGISTERED SUCCESSFULLY: "+instance.adminStaff.getFullName()+" : "+instance.adminStaff.getStaffId());
             DialogUtils.showSuccessDialog("Recruit "+email+" has been registered Successfully");
 
-            }
+           }
         }
     }
 

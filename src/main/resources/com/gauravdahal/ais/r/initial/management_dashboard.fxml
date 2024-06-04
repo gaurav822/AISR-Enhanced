@@ -66,22 +66,22 @@
                                  </font>
                               </Label>
                               <Label layoutX="18.0" layoutY="91.0" text="Full Name" />
-                              <TextField fx:id="tfStaffName" layoutX="137.0" layoutY="86.0" prefHeight="26.0" prefWidth="190.0" text="Nished Ghimire" />
+                              <TextField fx:id="fullName" layoutX="137.0" layoutY="86.0" prefHeight="26.0" prefWidth="190.0" />
                               <Label layoutX="19.0" layoutY="128.0" text="Phone Number:" />
-                              <TextField layoutX="137.0" layoutY="125.0" prefHeight="26.0" prefWidth="189.0" text="0412345678" />
+                              <TextField fx:id="phoneNumber" layoutX="137.0" layoutY="125.0" prefHeight="26.0" prefWidth="189.0" />
                               <Label layoutX="19.0" layoutY="167.0" text="Email:" />
-                              <TextField layoutX="136.0" layoutY="162.0" prefHeight="26.0" prefWidth="189.0" text="test2@gmail.com" />
+                              <TextField fx:id="email" layoutX="136.0" layoutY="162.0" prefHeight="26.0" prefWidth="189.0" />
                               <Label layoutX="19.0" layoutY="207.0" text="Username:" />
-                              <TextField layoutX="134.0" layoutY="203.0" prefHeight="26.0" prefWidth="189.0" text="1234" />
+                              <TextField fx:id="userName" layoutX="134.0" layoutY="203.0" prefHeight="26.0" prefWidth="189.0" />
                               <Label layoutX="19.0" layoutY="251.0" text="Staff ID:" />
-                              <TextField layoutX="136.0" layoutY="246.0" prefHeight="26.0" prefWidth="189.0" text="1111" />
+                              <TextField fx:id="staffId" layoutX="136.0" layoutY="246.0" prefHeight="26.0" prefWidth="189.0" />
                               <Label layoutX="17.0" layoutY="292.0" text="Management Level" />
-                              <ChoiceBox layoutX="138.0" layoutY="287.0" prefHeight="26.0" prefWidth="161.0" />
+                              <ChoiceBox fx:id="cBoxManagement" layoutX="138.0" layoutY="287.0" prefHeight="26.0" prefWidth="161.0" />
                               <Button layoutX="122.0" layoutY="389.0" mnemonicParsing="false" onAction="#onAccountUpdate" prefHeight="26.0" prefWidth="145.0" text="Update" />
                               <Label layoutX="18.0" layoutY="338.0" text="Branch Name" />
-                              <ChoiceBox layoutX="139.0" layoutY="333.0" prefHeight="26.0" prefWidth="166.0" />
-                              <Label layoutX="152.0" layoutY="292.0" text="Mid-Level Manager" />
-                              <Label layoutX="157.0" layoutY="338.0" text="Brisbane" />
+                              <ChoiceBox fx:id="cBoxBranch" layoutX="139.0" layoutY="333.0" prefHeight="26.0" prefWidth="166.0" />
+                              <Label layoutX="152.0" layoutY="292.0" />
+                              <Label fx:id="cBoxBranchName" layoutX="157.0" layoutY="338.0" />
                            </children>
                         </AnchorPane>
                      </content>

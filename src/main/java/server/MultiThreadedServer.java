@@ -140,6 +140,12 @@ class Connection extends Thread {
                     out.writeObject("GET_ADMIN_INFO");
                     out.writeObject(adminStaff);
                     out.flush();
+                } else if (command.equals("GET_MANAGEMENT_INFO")) {
+                    String email = (String) in.readObject();
+                    ManagementStaff mgmtStaff = DatabaseHelper.getInstance().getManagementDetail(email);
+                    out.writeObject("GET_MANAGEMENT_INFO");
+                    out.writeObject(mgmtStaff);
+                    out.flush();
                 } else if (command.equals("UPDATE_RECRUIT")) {
                     Recruit recruitToUpdate = (Recruit) in.readObject();
                     boolean updateSuccess = DatabaseHelper.getInstance().updateRecruit(recruitToUpdate);

@@ -5,7 +5,11 @@
 package com.gauravdahal.ais.r.initial;
 
 import Constants.Constants;
+import ENUM.BranchName;
+import ENUM.ManagementLevel;
 import Utils.DialogUtils;
+import aisr.model.AdminStaff;
+import aisr.model.ManagementStaff;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -33,6 +37,7 @@ import aisr.model.Recruit;
 import client.ClientConnection;
 import java.io.EOFException;
 import javafx.collections.ObservableList;
+import session.SessionManager;
 
 /**
  * FXML Controller class
@@ -50,8 +55,6 @@ public class ManagementDashboardController implements Initializable {
     @FXML
     private Label labelStaffName;
     @FXML
-    private TextField tfStaffName;
-    @FXML
     private TextField tfStudentId;
     @FXML
     private ChoiceBox<String> cboxRecruits;
@@ -63,14 +66,48 @@ public class ManagementDashboardController implements Initializable {
     private Label labelRecruitNotFound;
 
     private static ManagementDashboardController instance;
+    
+    private static ManagementStaff mgmtStaff;
+    
+    
+    @FXML
+    private TextField fullName;
+    @FXML
+    private TextField phoneNumber;
+    @FXML
+    private TextField email;
+    @FXML
+    private TextField userName;
+    @FXML
+    private TextField staffId;
+    @FXML
+    private ChoiceBox<String> cBoxManagement;
+    @FXML
+    private ChoiceBox<String> cBoxBranch;
+
 
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        
+        cBoxManagement.setItems(FXCollections.observableArrayList(
+                ManagementLevel.SENIOR.label,
+                ManagementLevel.MIDLEVEL.label,
+                ManagementLevel.SUPERVISOR.label
+        ));
+
+        cBoxBranch.setItems(FXCollections.observableArrayList(
+                BranchName.MELBOURNE.toString(),
+                BranchName.SYDNEY.toString(),
+                BranchName.BRISBANE.toString(),
+                BranchName.ADELAIDE.toString()
+        ));
         instance = this;
         requestDataFromServer("GET_RECRUITS", null);// Set the instance
+        requestDataFromServer("GET_MANAGEMENT_INFO", SessionManager.getInstance().getCurrentUser().getEmail());
+
 
     }
 
@@ -99,6 +136,21 @@ public class ManagementDashboardController implements Initializable {
         } catch (IOException e) {
             DialogUtils.showErrorDialog(e.getMessage());
             System.out.println("readline: " + e.getMessage());
+        }
+    }
+    
+    
+     public static void setManagementStaff(ManagementStaff staff) {
+         mgmtStaff = staff;
+        if (instance != null) {
+
+            instance.fullName.setText(staff.getFullName());
+            instance.email.setText(staff.getEmailAddress());
+            instance.phoneNumber.setText(staff.getPhoneNumber());
+            instance.userName.setText(staff.getUserName());
+            instance.staffId.setText(staff.getStaffId());
+            instance.cBoxManagement.setValue(staff.getManagementLevel().label);
+            instance.cBoxBranch.setValue(staff.getBranchName());
         }
     }
 

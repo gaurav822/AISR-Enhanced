@@ -22,6 +22,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import logger.Logger;
 import session.SessionManager;
 
 public class DatabaseHelper {
@@ -171,9 +172,12 @@ public class DatabaseHelper {
             statement.setString(7, adminStaff.getPassword());
             statement.setString(8, adminStaff.getPositionType().label);
             statement.executeUpdate();
+            Logger.log("REGISTRATION SUCCESS : "+adminStaff.getFullName()+" : "+adminStaff.getStaffId());
         } catch (SQLException e) {
+             Logger.log("REGISTRATION FAILED : "+adminStaff.getFullName()+" : "+adminStaff.getStaffId());
             e.printStackTrace();
         } catch (Exception e) {
+            Logger.log("REGISTRATION FAILED : "+adminStaff.getFullName()+" : "+adminStaff.getStaffId());
             e.printStackTrace();
         }
     }
@@ -271,7 +275,7 @@ public class DatabaseHelper {
         return recruits;
     }
 
-    public Staff getManagementDetail(String email) {
+    public ManagementStaff getManagementDetail(String email) {
         ManagementStaff mgmtStaff = null;
         String query = "SELECT * FROM staff WHERE email_address = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -296,6 +300,7 @@ public class DatabaseHelper {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        System.out.println("The mgmt staff is "+mgmtStaff);
         return mgmtStaff;
     }
 
@@ -402,7 +407,6 @@ public class DatabaseHelper {
                     SessionUser user = new SessionUser(email); // Assuming you have a User class
                     sessionManager.setCurrentUser(user);
                     return resultSet.getString("staff_type");
-
                 } else {
                     return null;
                 }
@@ -427,6 +431,32 @@ public class DatabaseHelper {
             imageDataBlob.setBytes(1, recruitToUpdate.getImageData());
             statement.setBlob(8, imageDataBlob);
             statement.setString(9, recruitToUpdate.getEmailAddress());
+            int rowsUpdated = statement.executeUpdate();
+            return rowsUpdated > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    
+    public boolean updateRecruitFromStaff(Recruit recruit){
+        String query = "UPDATE recruits SET full_name = ?, address = ?, phone_number = ?, email_address = ?, username = ?, password = ?, qualification_level = ?, department = ?,branch = ?, staff_id = ?, staff_name = ?, staff_branch = ? WHERE email_address = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, recruit.getFullName());
+            statement.setString(2, recruit.getAddress());
+            statement.setString(3, recruit.getPhoneNumber());
+            statement.setString(4, recruit.getEmailAddress());
+            statement.setString(5, recruit.getUserName());
+            statement.setString(6, recruit.getPassword());
+            statement.setString(7, recruit.getQualificationLevel());
+            statement.setString(8, recruit.getDepartment());
+            statement.setString(9, recruit.getBranch());
+            statement.setString(10, recruit.getStaffId());
+            statement.setString(11, recruit.getStaffName());
+            statement.setString(12, recruit.getStaffBranch());
+            statement.setString(13, recruit.getEmailAddress());
+
             int rowsUpdated = statement.executeUpdate();
             return rowsUpdated > 0;
         } catch (SQLException e) {

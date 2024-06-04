@@ -19,6 +19,7 @@ import javafx.collections.FXCollections;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.text.Text;
+import logger.Logger;
 
 /**
  * FXML Controller class for handling login functionality.
@@ -60,6 +61,8 @@ public class LoginController implements Initializable {
     private ClientConnection clientConnection;
 
     private static LoginController instance;
+    
+    private static String oneTimeToken = "";
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -133,12 +136,14 @@ public class LoginController implements Initializable {
 
         if (instance != null) {
             if (staffType != null && staffType.equals("ADMIN")) {
+                Logger.log("LOGIN SUCCESS");
                 DialogUtils.showSuccessDialog("Login Success");
                 App.setRoot("admin_dashboard");
             } else if (staffType != null && staffType.equals("MANAGEMENT")) {
                 DialogUtils.showSuccessDialog("Login Success");
                 App.setRoot("management_dashboard");
             } else {
+                Logger.log("LOGIN FAILED");
                 DialogUtils.showErrorDialog("Invalid Credentials");
             }
         }
@@ -151,12 +156,14 @@ public class LoginController implements Initializable {
         }
 
         try {
+            Token token = new Token(email);
             clientConnection.getOut().writeObject("SEND_TOKEN"); // Send command to add admin staff
-            clientConnection.getOut().writeObject(new Token(email)); // Send admin staff object
+            clientConnection.getOut().writeObject(token); // Send admin staff object
             clientConnection.getOut().flush();
             tfoneTimeToken.clear();
             DialogUtils.showSuccessDialog("Token Requested Successfully");
             isTokenRequested = true;
+            oneTimeToken = token.getGenerated_token();
             tfoneTimeToken.setDisable(false);
             btnLogin.setText("Login");
         } catch (EOFException e) {
@@ -174,7 +181,6 @@ public class LoginController implements Initializable {
             clientConnection.getOut().writeObject(email); // Send admin staff object
             clientConnection.getOut().writeObject(password); // Send admin staff object
             clientConnection.getOut().flush();
-            tfoneTimeToken.clear();
         } catch (EOFException e) {
             DialogUtils.showErrorDialog(e.getMessage());
             System.out.println("EOF: " + e.getMessage());
@@ -256,8 +262,15 @@ public class LoginController implements Initializable {
     }
 
     public static void handleRecruitLoginSuccess() throws IOException {
-        DialogUtils.showSuccessDialog("Login Success");
-        App.setRoot("recruit_dashboard");
+        if(instance.tfoneTimeToken.getText().equals(oneTimeToken)){
+            instance.tfoneTimeToken.clear();
+            DialogUtils.showSuccessDialog("Login Success");
+            App.setRoot("recruit_dashboard");
+        }
+        else{
+            DialogUtils.showErrorDialog("Invalid Token");
+        }
+        
     }
 
     public static void handleRecruitLoginFailed() {

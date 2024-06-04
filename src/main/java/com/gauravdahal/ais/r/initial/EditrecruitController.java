@@ -31,13 +31,14 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import aisr.model.Recruit;
+import logger.Logger;
+
 /**
  * FXML Controller class
  *
  * @author gauravdahal
  */
 public class EditrecruitController implements Initializable {
-
 
     @FXML
     private TextField tfFullName;
@@ -62,39 +63,37 @@ public class EditrecruitController implements Initializable {
     private ChoiceBox<String> choiceBoxDepart;
     @FXML
     private Label labelFullNameHeader;
-    
-    
-    
+
     private String recruitUserName;
     @FXML
     private ChoiceBox<?> choiceBoxDepart1;
-    
+
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-         choiceBoxDepart.setItems(FXCollections.observableArrayList(
+        choiceBoxDepart.setItems(FXCollections.observableArrayList(
                 Department.SOFTWARE.toString(),
                 Department.MECHANICAL.toString(),
                 Department.ELECTRONICS.toString(),
                 Department.AEROSPACE.toString()
         ));
-    }    
-    
+    }
+
     @FXML
     private void onUpdateClicked(ActionEvent event) {
-        
-         DialogUtils.showSuccessDialog("Details updated Successfully");
+        Logger.log(recruitUserName);
+        DialogUtils.showSuccessDialog("Details updated Successfully");
     }
 
     @FXML
     private void onUploadMoreClicked(ActionEvent event) {
-        
-         DialogUtils.showSuccessDialog("Files uploaded Successfully");
+
+        DialogUtils.showSuccessDialog("Files uploaded Successfully");
     }
-    
-    public void setData(Recruit recruit){
+
+    public void setData(Recruit recruit) {
         labelFullNameHeader.setText(recruit.getFullName());
         tfFullName.setText(recruit.getFullName());
         tfAddress.setText(recruit.getAddress());
@@ -105,12 +104,11 @@ public class EditrecruitController implements Initializable {
         tfRepassword.setText(EncryptionUtils.decrypt(recruit.getPassword()));
         cBoxQualification.setValue(recruit.getQualificationLevel());
         interviewDatePicker.setValue(Utils.parseDate(recruit.getInterviewDate()));
-        labelDepartment.setText(recruit.getDepartment());
-        if(!recruit.getDepartment().isEmpty()){
+        if (recruit.getDepartment()!=null && !recruit.getDepartment().isEmpty()) {
             choiceBoxDepart.setValue(recruit.getDepartment());
         }
         this.recruitUserName = recruit.getUserName();
-        
+
     }
 
 //    @FXML
@@ -123,20 +121,18 @@ public class EditrecruitController implements Initializable {
 //            
 //
 //    }
-
     private void onDepartmentAssigned(ActionEvent event) throws IOException {
-        if(choiceBoxDepart.getValue()==null){
+        if (choiceBoxDepart.getValue() == null) {
             DialogUtils.showWarningDialog("Please select the department");
-        }
-        else{
-            updateDepartment(recruitUserName,choiceBoxDepart.getValue());
+        } else {
+            updateDepartment(recruitUserName, choiceBoxDepart.getValue());
             DialogUtils.showSuccessDialog("Department assigned Successfully");
             labelDepartment.setText(choiceBoxDepart.getValue());
         }
     }
-    
+
     private void updateDepartment(String username, String newDepartment) throws IOException {
-        
+
     }
 
     @FXML

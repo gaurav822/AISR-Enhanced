@@ -148,11 +148,12 @@ class SocketDataIn extends Thread {
 
                     case "STAFF_TYPE":
                         String staffType = (String) in.readObject();
+                        System.out.println("The staff type is "+staffType);
                         Platform.runLater(() -> {
                             try {
                                 LoginController.navigateToStaffDashboard(staffType);
                             } catch (IOException e) {
-                                System.out.println("I/O error: " + e.getMessage());
+                                System.out.println("I/O error: from here " + e.getMessage());
                             }
                         });
                         break;
@@ -160,6 +161,13 @@ class SocketDataIn extends Thread {
                     case "GET_ADMIN_INFO":
                         AdminStaff adminInfo = (AdminStaff) in.readObject();
                         Platform.runLater(() -> AdminDashboardController.setAdminStaff(adminInfo));
+                        break;
+                    
+                    case "GET_MANAGEMENT_INFO":
+                        ManagementStaff mgmtInfo = (ManagementStaff) in.readObject();
+                     System.out.println("The mgmt staff from client is "+mgmtInfo);
+
+                        Platform.runLater(() -> ManagementDashboardController.setManagementStaff(mgmtInfo));
                         break;
 
                     case "ADD_RECRUIT_RESPONSE":
