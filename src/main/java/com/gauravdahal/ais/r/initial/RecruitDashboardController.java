@@ -94,8 +94,9 @@ public class RecruitDashboardController implements Initializable {
     @FXML
     private Button logoutButton;
 
-    private Connection connection;
     private ClientConnection clientConnection;
+
+    Image orignalImage;
     byte[] imageData;
 
     Recruit currentRecruit = null;
@@ -130,8 +131,13 @@ public class RecruitDashboardController implements Initializable {
             interviewDateLabel.setText(currentRecruit.getInterviewDate());
             qualificationLevelLabel.setText(currentRecruit.getQualificationLevel());
 
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(currentRecruit.getImageData());
-            Image image = new Image(inputStream);
+            Image image = new Image(getClass().getResourceAsStream("/assets/empty.jpg"));
+
+            if (currentRecruit.getImageData() != null) {
+                ByteArrayInputStream inputStream = new ByteArrayInputStream(currentRecruit.getImageData());
+                image = new Image(inputStream);
+            }
+            orignalImage = image;
             imageView.setImage(image);
         }
     }
@@ -162,10 +168,14 @@ public class RecruitDashboardController implements Initializable {
                 qualificationLevelComboBox.getValue().toString(),
                 "",
                 imageData);
+
         clientConnection.getOut().writeObject("UPDATE_RECRUIT");
         clientConnection.getOut().writeObject(recruit);
         clientConnection.getOut().flush();
         toggleEditMode(false);
+
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(imageData);
+        orignalImage = new Image(byteArrayInputStream);
     }
 
     /**
@@ -174,9 +184,8 @@ public class RecruitDashboardController implements Initializable {
     @FXML
     private void handleCancelAction() {
         if (fullNameField.isVisible()) {
-            Image originalImage = new Image(getClass().getResourceAsStream("/assets/empty.jpg"));
             imageData = null;
-            imageView.setImage(originalImage);
+            imageView.setImage(orignalImage);
         }
         toggleEditMode(false);
     }

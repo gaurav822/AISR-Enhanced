@@ -464,8 +464,10 @@ public class DatabaseHelper {
                 String qualificationLevel = resultSet.getString("qualification_level");
                 Blob imgBlob = resultSet.getBlob("image_data");
                 String interviewDate = resultSet.getString("interview_date");
-                byte[] imageData = imgBlob.getBytes(1l, (int) imgBlob.length());
-
+                byte[] imageData = null;
+                if (imgBlob != null) {
+                    imageData = imgBlob.getBytes(1l, (int) imgBlob.length());
+                }
                 recruit = new Recruit(bio, fullName, address, phoneNumber, email, username, password,
                         qualificationLevel, interviewDate, imageData);
             }
