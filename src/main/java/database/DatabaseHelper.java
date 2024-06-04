@@ -101,8 +101,8 @@ public class DatabaseHelper {
                 + "email_address VARCHAR(255) UNIQUE,"
                 + "username VARCHAR(255),"
                 + "password VARCHAR(255),"
-                + "interviewDate VARCHAR(255),"
-                + "qualificationLevel VARCHAR(255),"
+                + "interview_date VARCHAR(255),"
+                + "qualification_level VARCHAR(255),"
                 + "department VARCHAR(255),"
                 + "branch VARCHAR(255),"
                 + "staff_id VARCHAR(255),"
@@ -205,7 +205,7 @@ public class DatabaseHelper {
 
     public boolean insertRecruit(Recruit recruit) {
 
-        String query = "INSERT INTO recruits (full_name, address, phone_number, email_address, username, password, interviewDate,qualificationLevel,department,branch,staff_id,staff_name,date_data_added,staff_branch) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO recruits (full_name, address, phone_number, email_address, username, password, interview_date,qualification_level,department,branch,staff_id,staff_name,date_data_added,staff_branch) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, recruit.getFullName());
@@ -247,8 +247,8 @@ public class DatabaseHelper {
                 String emailAddress = resultSet.getString("email_address");
                 String username = resultSet.getString("username");
                 String password = resultSet.getString("password");
-                String interviewDate = resultSet.getString("interviewDate");
-                String qualificationLevel = resultSet.getString("qualificationLevel");
+                String interviewDate = resultSet.getString("interview _date");
+                String qualificationLevel = resultSet.getString("qualification_level");
                 String department = resultSet.getString("department");
                 String branch = resultSet.getString("branch");
                 String staffId = resultSet.getString("staff_id");
