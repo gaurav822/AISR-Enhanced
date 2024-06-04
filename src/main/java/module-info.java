@@ -8,4 +8,5 @@ module com.gauravdahal.ais.r.initial {
     opens aisr.model to javafx.base;
     
     exports com.gauravdahal.ais.r.initial;
+    requires pdfbox;
 }

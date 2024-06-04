@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package aisr.model;
 
 import java.io.Serializable;
@@ -10,8 +6,10 @@ import java.io.Serializable;
  *
  * @author gauravdahal
  */
-public class Recruit extends Staff implements Serializable{
-    
+public class Recruit extends Staff implements Serializable {
+
+    private String bio;
+    private byte[] image_data;
     private String interviewDate;
     private String qualificationLevel;
     private String department;
@@ -20,12 +18,18 @@ public class Recruit extends Staff implements Serializable{
     private String staffName;
     private String dateDataAdded;
     private String staffBranch;
-            
-    
+
     public Recruit(String fullName, String address, String phoneNumber, String emailAddress, String userName, String password) {
         super(fullName, address, phoneNumber, emailAddress, userName, password);
     }
-    
+
+    public Recruit(String bio, String fullName, String address, String phoneNumber, String emailAddress, String userName, String password, String qualificationLevel, String interviewDate, byte[] image_data) {
+        super(fullName, address, phoneNumber, emailAddress, userName, password);
+        this.bio = bio;
+        this.qualificationLevel = qualificationLevel;
+        this.interviewDate = interviewDate;
+        this.image_data = image_data;
+    }
 
     /**
      * @return the interviewDate
@@ -39,6 +43,22 @@ public class Recruit extends Staff implements Serializable{
      */
     public void setInterviewDate(String interviewDate) {
         this.interviewDate = interviewDate;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public byte[] getImageData() {
+        return image_data;
+    }
+
+    public void setImageData(byte[] image_data) {
+        this.image_data = image_data;
     }
 
     /**
@@ -82,12 +102,12 @@ public class Recruit extends Staff implements Serializable{
     public void setBranch(String branch) {
         this.branch = branch;
     }
-    
+
     @Override
     public String toString() {
-         return String.format("%s,\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\""
-                 , super.toString(), 
-                 interviewDate, qualificationLevel, department,branch, getStaffId(), getStaffName(), getDateDataAdded(), getStaffBranch());
+        return String.format("%s,\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
+                super.toString(),
+                interviewDate, qualificationLevel, department, branch, getStaffId(), getStaffName(), getDateDataAdded(), getStaffBranch());
     }
 
     /**
@@ -145,6 +165,5 @@ public class Recruit extends Staff implements Serializable{
     public void setStaffBranch(String staffBranch) {
         this.staffBranch = staffBranch;
     }
-    
-    
+
 }

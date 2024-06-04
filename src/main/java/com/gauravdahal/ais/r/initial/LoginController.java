@@ -1,26 +1,13 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/javafx/FXMLController.java to edit this template
- */
 package com.gauravdahal.ais.r.initial;
 
-import Constants.Constants;
-import ENUM.QualificationLevel;
 import ENUM.StaffType;
 import ENUM.UserType;
 import Utils.DialogUtils;
-import Utils.EncryptionUtils;
-import aisr.model.Recruit;
 import aisr.model.Token;
 import client.ClientConnection;
-import database.DatabaseHelper;
-import java.io.BufferedReader;
 import java.io.EOFException;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -28,9 +15,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import javafx.collections.FXCollections;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceBox;
@@ -130,15 +114,7 @@ public class LoginController implements Initializable {
             if (tfoneTimeToken.getText().isEmpty()) {
                 DialogUtils.showWarningDialog("Please enter one time token");
             } else {
-                boolean isValidRecruit = DatabaseHelper.getInstance().verifyRecruit(email, password);
-                if (isValidRecruit) {
-                    DialogUtils.showSuccessDialog("Login Success");
-                    App.setRoot("recruit_dashboard");
-                } else {
-                    DialogUtils.showErrorDialog("Invalid Credentials");
-
-                }
-
+                verifyLogin(email, password, UserType.Recruit);
             }
             //handle recruit login
         } else {
@@ -154,19 +130,19 @@ public class LoginController implements Initializable {
     }
 
     public static void navigateToStaffDashboard(String staffType) throws IOException {
-        
-        if(instance!=null){
+
+        if (instance != null) {
             if (staffType != null && staffType.equals("ADMIN")) {
-            DialogUtils.showSuccessDialog("Login Success");
-            App.setRoot("admin_dashboard");
-        } else if (staffType != null && staffType.equals("MANAGEMENT")) {
-            DialogUtils.showSuccessDialog("Login Success");
-            App.setRoot("management_dashboard");
-        } else {
-            DialogUtils.showErrorDialog("Invalid Credentials");
+                DialogUtils.showSuccessDialog("Login Success");
+                App.setRoot("admin_dashboard");
+            } else if (staffType != null && staffType.equals("MANAGEMENT")) {
+                DialogUtils.showSuccessDialog("Login Success");
+                App.setRoot("management_dashboard");
+            } else {
+                DialogUtils.showErrorDialog("Invalid Credentials");
+            }
         }
-        }
-        
+
     }
 
     private void sendTokenToServer(String email) {
@@ -279,4 +255,12 @@ public class LoginController implements Initializable {
         tfoneTimeToken.setVisible(false);
     }
 
+    public static void handleRecruitLoginSuccess() throws IOException {
+        DialogUtils.showSuccessDialog("Login Success");
+        App.setRoot("recruit_dashboard");
+    }
+
+    public static void handleRecruitLoginFailed() {
+        DialogUtils.showErrorDialog("Invalid Credentials");
+    }
 }

@@ -1,14 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package server;
 
 /**
  *
  * @author gauravdahal
  */
-import Utils.DialogUtils;
 import aisr.model.AdminStaff;
 import aisr.model.ManagementStaff;
 import aisr.model.Recruit;
@@ -19,9 +14,6 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.collections.ObservableList;
 
 public class MultiThreadedServer {
 
@@ -116,6 +108,18 @@ class Connection extends Thread {
                     System.out.println("Token from server: " + token.getGenerated_token());
                     DatabaseHelper.getInstance().insertToken(token);
                 } else if (command.equals("VERIFY_LOGIN_Recruit")) {
+                    String email = (String) in.readObject();
+                    String password = (String) in.readObject();
+
+                    Recruit recruit = DatabaseHelper.getInstance().verifyRecruit(email, password);
+
+                    if (recruit != null) {
+                        out.writeObject("RECRUIT_LOGIN_SUCCESS");
+                        out.writeObject(recruit);
+                    } else {
+                        out.writeObject("RECRUIT_LOGIN_FAILED");
+                    }
+                    out.flush();
 
                 } else if (command.equals("VERIFY_LOGIN_Staff")) {
                     String email = (String) in.readObject();
@@ -135,6 +139,13 @@ class Connection extends Thread {
                     AdminStaff adminStaff = DatabaseHelper.getInstance().getAdminDetail(email);
                     out.writeObject("GET_ADMIN_INFO");
                     out.writeObject(adminStaff);
+                    out.flush();
+                } else if (command.equals("UPDATE_RECRUIT")) {
+                    Recruit recruitToUpdate = (Recruit) in.readObject();
+                    boolean updateSuccess = DatabaseHelper.getInstance().updateRecruit(recruitToUpdate);
+
+                    out.writeObject("UPDATE_RECRUIT_RESPONSE");
+                    out.writeObject(updateSuccess);
                     out.flush();
                 }
 

@@ -1,22 +1,12 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/javafx/FXMLController.java to edit this template
- */
 package com.gauravdahal.ais.r.initial;
 
-import Constants.Constants;
-import ENUM.Position;
 import ENUM.QualificationLevel;
-import ENUM.StaffType;
 import Utils.DialogUtils;
 import Utils.EncryptionUtils;
 import Utils.Utils;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
@@ -30,11 +20,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import aisr.model.AdminStaff;
-import aisr.model.ManagementStaff;
 import aisr.model.Recruit;
 import client.ClientConnection;
-import java.io.EOFException;
-import session.SessionManager;
 
 /**
  * FXML Controller class

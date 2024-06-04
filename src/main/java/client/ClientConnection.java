@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package client;
 
 /**
@@ -11,6 +7,7 @@ package client;
 import aisr.model.AdminStaff;
 import aisr.model.ManagementStaff;
 import aisr.model.Recruit;
+import aisr.model.SessionUser;
 import com.gauravdahal.ais.r.initial.AddrecruitController;
 import com.gauravdahal.ais.r.initial.AdminDashboardController;
 import com.gauravdahal.ais.r.initial.LoginController;
@@ -25,8 +22,11 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import session.SessionManager;
 
 public class ClientConnection {
 
@@ -144,7 +144,8 @@ class SocketDataIn extends Thread {
                         String staffType = (String) in.readObject();
                         Platform.runLater(() -> {
                             try {
-                                LoginController.navigateToStaffDashboard(staffType); // Update the table view on FX thread
+                                LoginController.navigateToStaffDashboard(staffType); // Update the table view on FX
+                                // thread
                             } catch (IOException e) {
                                 System.out.println("I/O error: " + e.getMessage());
                             }
@@ -185,6 +186,26 @@ class SocketDataIn extends Thread {
                         System.out.println("Class not found: " + e.getMessage());
                     }
 
+                } else if ("RECRUIT_LOGIN_SUCCESS".equals(command)) {
+                    Recruit recruit = (Recruit) in.readObject();
+
+                    SessionManager sessionManager = SessionManager.getInstance();
+                    SessionUser user = new SessionUser(recruit.getEmailAddress(), recruit); // Assuming you have a User class
+                    sessionManager.setCurrentUser(user);
+
+                    Platform.runLater(() -> {
+                        try {
+                            LoginController.handleRecruitLoginSuccess();
+                        } catch (IOException ex) {
+                            Logger.getLogger(SocketDataIn.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+
+                    });
+
+                } else if ("RECRUIT_LOGIN_FAILED".equals(command)) {
+                    Platform.runLater(() -> {
+                        LoginController.handleRecruitLoginFailed();
+                    });
                 }
 
             } catch (SocketException e) {

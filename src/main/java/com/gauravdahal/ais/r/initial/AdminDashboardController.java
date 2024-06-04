@@ -1,20 +1,11 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/javafx/FXMLController.java to edit this template
- */
 package com.gauravdahal.ais.r.initial;
 
-import Constants.Constants;
 import ENUM.Position;
 import Utils.DialogUtils;
 import aisr.model.AdminStaff;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -24,19 +15,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import aisr.model.Recruit;
-import aisr.model.Token;
 import client.ClientConnection;
-import database.DatabaseHelper;
 import java.io.EOFException;
 import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
@@ -69,7 +54,7 @@ public class AdminDashboardController implements Initializable {
     private static AdminDashboardController instance;
 
     private static AdminStaff adminStaff;
-    
+
     @FXML
     private TextField tfFullName;
     @FXML
@@ -88,8 +73,7 @@ public class AdminDashboardController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
-        
+
         cBoxPositionType.setItems(FXCollections.observableArrayList(
                 Position.FULL_TIME.label,
                 Position.PART_TIME.label,
@@ -103,7 +87,7 @@ public class AdminDashboardController implements Initializable {
         setupRowFactoryForRecruit();
         instance = this;
         requestDataFromServer("GET_RECRUITS", null);// Set the instance
-        requestDataFromServer("GET_ADMIN_INFO", SessionManager.getInstance().getCurrentUser().email);
+        requestDataFromServer("GET_ADMIN_INFO", SessionManager.getInstance().getCurrentUser().getEmail());
 
     }
 
@@ -133,8 +117,8 @@ public class AdminDashboardController implements Initializable {
 
         }
     }
-    
-    public static AdminStaff getAdminStaff(AddrecruitController controller){
+
+    public static AdminStaff getAdminStaff(AddrecruitController controller) {
         return adminStaff;
     }
 

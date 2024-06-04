@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package database;
 
 /**
@@ -11,7 +7,6 @@ package database;
 import Constants.Constants;
 import ENUM.ManagementLevel;
 import ENUM.Position;
-import ENUM.StaffType;
 import Utils.EncryptionUtils;
 import aisr.model.AdminStaff;
 import aisr.model.ManagementStaff;
@@ -19,6 +14,7 @@ import aisr.model.Recruit;
 import aisr.model.SessionUser;
 import aisr.model.Staff;
 import aisr.model.Token;
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -26,8 +22,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import session.SessionManager;
 
 public class DatabaseHelper {
@@ -96,6 +90,7 @@ public class DatabaseHelper {
         String createRecruitsTable = "CREATE TABLE IF NOT EXISTS " + Constants.DATABASE_NAME + ".recruits ("
                 + "id INT AUTO_INCREMENT PRIMARY KEY,"
                 + "full_name VARCHAR(255) NOT NULL,"
+                + "bio TEXT,"
                 + "address VARCHAR(255),"
                 + "phone_number VARCHAR(20),"
                 + "email_address VARCHAR(255) UNIQUE,"
@@ -108,7 +103,8 @@ public class DatabaseHelper {
                 + "staff_id VARCHAR(255),"
                 + "staff_name VARCHAR(255),"
                 + "date_data_added DATE,"
-                + "staff_branch VARCHAR(255)"
+                + "staff_branch VARCHAR(255),"
+                + "image_data MEDIUMBLOB"
                 + ");";
 
         try (Statement statement = connection.createStatement()) {
@@ -228,9 +224,9 @@ public class DatabaseHelper {
                 return true;
             }
         } catch (Exception e) {
-           return true;
+            return true;
         }
-        
+
         return false;
     }
 
@@ -353,21 +349,26 @@ public class DatabaseHelper {
         return staffType;
     }
 
-    public boolean verifyRecruit(String email, String encryptedPassword) {
+    public Recruit verifyRecruit(String email, String encryptedPassword) {
         // Fetch the encrypted password stored in the database
         String storedEncryptedPassword = fetchEncryptedPasswordFromDatabase(email);
         if (storedEncryptedPassword == null) {
-            return false; // Email not found in the database
+            return null; // Email not found in the database
         }
 
         // Decrypt the stored encrypted password
         String decryptedStoredPassword = EncryptionUtils.decrypt(storedEncryptedPassword);
         if (decryptedStoredPassword == null) {
-            return false; // Decryption failed, return false
+            return null; // Decryption failed, return false
         }
 
         // Compare the decrypted stored password with the provided encrypted password
-        return decryptedStoredPassword.equals(encryptedPassword);
+        if (decryptedStoredPassword.equals(encryptedPassword)) {
+            Recruit recruit = getRecruitUser(email);
+            return recruit;
+        }
+
+        return null;
     }
 
     private String fetchEncryptedPasswordFromDatabase(String email) {
@@ -394,7 +395,7 @@ public class DatabaseHelper {
                 String decryptedStoredPassword = EncryptionUtils.decrypt(dbPassword);
                 if (password.equals(decryptedStoredPassword)) {
 
-                    //Creating a session object with user information
+                    // Creating a session object with user information
                     SessionManager sessionManager = SessionManager.getInstance();
                     SessionUser user = new SessionUser(email); // Assuming you have a User class
                     sessionManager.setCurrentUser(user);
@@ -408,6 +409,56 @@ public class DatabaseHelper {
             e.printStackTrace();
         }
         return null; // Email not found in the database
+    }
+
+    public boolean updateRecruit(Recruit recruitToUpdate) {
+        String query = "UPDATE recruits SET bio = ?, full_name = ?, address = ?, phone_number = ?, email_address = ?, username = ?, password = ?, qualification_level = ?, image_data = ? WHERE email_address = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, recruitToUpdate.getBio());
+            statement.setString(2, recruitToUpdate.getFullName());
+            statement.setString(3, recruitToUpdate.getAddress());
+            statement.setString(4, recruitToUpdate.getPhoneNumber());
+            statement.setString(5, recruitToUpdate.getEmailAddress());
+            statement.setString(6, recruitToUpdate.getUserName());
+            statement.setString(7, recruitToUpdate.getPassword());
+            statement.setString(8, recruitToUpdate.getQualificationLevel());
+            Blob imageDataBlob = connection.createBlob();
+            imageDataBlob.setBytes(1, recruitToUpdate.getImageData());
+            statement.setBlob(9, imageDataBlob);
+            statement.setString(10, recruitToUpdate.getEmailAddress());
+            int rowsUpdated = statement.executeUpdate();
+            return rowsUpdated > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public Recruit getRecruitUser(String email) {
+        Recruit recruit = null;
+        String query = "SELECT * FROM recruits WHERE email_address = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, email);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                String bio = resultSet.getString("bio");
+                String fullName = resultSet.getString("full_name");
+                String address = resultSet.getString("address");
+                String phoneNumber = resultSet.getString("phone_number");
+                String username = resultSet.getString("username");
+                String password = resultSet.getString("password");
+                String qualificationLevel = resultSet.getString("qualification_level");
+                Blob imgBlob = resultSet.getBlob("image_data");
+                String interviewDate = resultSet.getString("interview_date");
+                byte[] imageData = imgBlob.getBytes(1l, (int) imgBlob.length());
+
+                recruit = new Recruit(bio, fullName, address, phoneNumber, email, username, password,
+                        qualificationLevel, interviewDate, imageData);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return recruit;
     }
 
 }

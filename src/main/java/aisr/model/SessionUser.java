@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package aisr.model;
 
 /**
@@ -10,6 +6,17 @@ package aisr.model;
  */
 public class SessionUser {
 
+    private Recruit recruit;
+    private String email;
+
+    public Recruit getRecruit() {
+        return recruit;
+    }
+
+    public void setRecruit(Recruit recruit) {
+        this.recruit = recruit;
+    }
+
     public String getEmail() {
         return email;
     }
@@ -17,11 +24,14 @@ public class SessionUser {
     public void setEmail(String email) {
         this.email = email;
     }
-    
-    public String email;
 
     public SessionUser(String email) {
         this.email = email;
     }
-    
+
+    public SessionUser(String email, Recruit recruit) {
+        this.email = email;
+        this.recruit = recruit;
+    }
+
 }
