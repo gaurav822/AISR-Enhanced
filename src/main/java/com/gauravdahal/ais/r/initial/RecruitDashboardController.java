@@ -7,6 +7,7 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import ENUM.QualificationLevel;
 import Utils.DialogUtils;
 import Utils.EncryptionUtils;
+import Utils.Utils;
 import aisr.model.Recruit;
 import client.ClientConnection;
 import java.io.ByteArrayInputStream;
@@ -157,37 +158,40 @@ public class RecruitDashboardController implements Initializable {
      */
     @FXML
     private void handleSaveAction() throws IOException {
-        byte[] imageData = null;
+        if (isValid()) {
 
-        if (tmpImageData != null) {
-            imageData = tmpImageData;
-        } else {
-            imageData = orignalImageData;
+            byte[] imageData = null;
+
+            if (tmpImageData != null) {
+                imageData = tmpImageData;
+            } else {
+                imageData = orignalImageData;
+            }
+
+            Recruit recruit = new Recruit(
+                    bioTextArea.getText(),
+                    fullNameField.getText(),
+                    addressField.getText(),
+                    phoneNumberField.getText(),
+                    emailField.getText(),
+                    usernameField.getText(),
+                    "",
+                    qualificationLevelComboBox.getValue().toString(),
+                    "",
+                    imageData);
+
+            clientConnection.getOut().writeObject("UPDATE_RECRUIT");
+            clientConnection.getOut().writeObject(recruit);
+            clientConnection.getOut().flush();
+            toggleEditMode(false);
+
+            currentRecruit = recruit;
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(tmpImageData);
+            orignalImage = new Image(inputStream);
+            orignalImageData = tmpImageData;
+            tmpImageData = null;
+            loadRecruitInformation();
         }
-
-        Recruit recruit = new Recruit(
-                bioTextArea.getText(),
-                fullNameField.getText(),
-                addressField.getText(),
-                phoneNumberField.getText(),
-                emailField.getText(),
-                usernameField.getText(),
-                "",
-                qualificationLevelComboBox.getValue().toString(),
-                "",
-                imageData);
-
-        clientConnection.getOut().writeObject("UPDATE_RECRUIT");
-        clientConnection.getOut().writeObject(recruit);
-        clientConnection.getOut().flush();
-        toggleEditMode(false);
-
-        currentRecruit = recruit;
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(tmpImageData);
-        orignalImage = new Image(inputStream);
-        orignalImageData = tmpImageData;
-        tmpImageData = null;
-        loadRecruitInformation();
     }
 
     /**
@@ -238,13 +242,11 @@ public class RecruitDashboardController implements Initializable {
         if (result.isPresent() && result.get() == ButtonType.OK) {
             String newPassword = newPasswordField.getText();
             String repeatPassword = repeatPasswordField.getText();
-
-            if (!newPassword.equals(repeatPassword)) {
-                showAlert("Error", "New password and repeat password do not match.");
+            
+            if (Utils.isNotValidPassword(newPassword, repeatPassword)) {
                 return;
             }
 
-            // Update the password
             updatePassword(newPassword);
         }
     }
@@ -486,4 +488,37 @@ public class RecruitDashboardController implements Initializable {
         DialogUtils.showSuccessDialog("Logout Successful");
         App.setRoot("login");
     }
+
+    public boolean isValid() {
+        if (fullNameField.getText().isEmpty()) {
+            DialogUtils.showErrorDialog("Name cannot be empty");
+            return false;
+        }
+
+        if (addressField.getText().isEmpty()) {
+            DialogUtils.showErrorDialog("Address cannot be empty");
+            return false;
+        }
+
+        if (Utils.isNotValidNumber(phoneNumberField.getText())) {
+            return false;
+        }
+
+        if (emailField.getText().isEmpty()) {
+            DialogUtils.showErrorDialog("Email cannot be empty");
+            return false;
+        }
+
+        if (usernameField.getText().isEmpty()) {
+            DialogUtils.showErrorDialog("Username cannot be empty");
+            return false;
+        }
+
+        if (qualificationLevelComboBox.getValue() == null) {
+            DialogUtils.showErrorDialog("Please select Qualification");
+            return false;
+        }
+        return true;
+    }
+
 }
