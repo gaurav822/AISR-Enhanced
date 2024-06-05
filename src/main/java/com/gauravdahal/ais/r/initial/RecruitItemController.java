@@ -54,7 +54,7 @@ public class RecruitItemController implements Initializable {
         EditrecruitAdminController controller = loader.getController();
         controller.setData(recruit);
 
-        // Replace the parent AnchorPane with the new AnchorPane
+        // Replace the parent AnchorPane wsith the new AnchorPane
         AnchorPane parentAnchorPane = (AnchorPane) hBoxEachItem.getParent().getParent(); // Assuming the parent is an AnchorPane
         parentAnchorPane.getChildren().setAll(newScrollPane);
     } catch (IOException e) {

@@ -22,6 +22,7 @@ import javafx.scene.layout.AnchorPane;
 import aisr.model.AdminStaff;
 import aisr.model.Recruit;
 import client.ClientConnection;
+import javafx.scene.control.TextArea;
 import logger.Logger;
 
 /**
@@ -59,9 +60,10 @@ public class AddrecruitController implements Initializable {
     private String adminEmail;
 
     private AdminStaff adminStaff;
-    
-  private static AddrecruitController instance;
 
+    private static AddrecruitController instance;
+    @FXML
+    private TextArea tAreaBio;
 
     /**
      * Initializes the controller class.
@@ -87,11 +89,6 @@ public class AddrecruitController implements Initializable {
     }
 
     @FXML
-    private void onFilesChoosed(ActionEvent event) {
-
-    }
-
-    @FXML
     private void onDataEntered(ActionEvent event) {
 
         if (areDataValid()) {
@@ -104,6 +101,7 @@ public class AddrecruitController implements Initializable {
                     pfPassword.getText());
             recruit.setInterviewDate(Utils.formatDate(dPInterViewDate.getValue()));
             recruit.setQualificationLevel(cBoxQualification.getValue());
+            recruit.setBio(tAreaBio.getText());
             recruit.setStaffName(adminStaff.getFullName());
             recruit.setStaffId(adminStaff.getStaffId());
             recruit.setDateDataAdded(Utils.formatDate(LocalDate.now()));
@@ -116,20 +114,17 @@ public class AddrecruitController implements Initializable {
             clearFields();
         }
     }
-    
-    
+
     public static void onResponseFromServer(boolean isDuplicateEntry, String email) {
         if (instance != null) {
             if (isDuplicateEntry) {
-                Logger.log("DUPLICATE RECRUIT WITH EMAIL "+email+" FOUND ON REGISTRATION : "+instance.adminStaff.getFullName()+" : "+instance.adminStaff.getStaffId());
+                Logger.log("DUPLICATE RECRUIT WITH EMAIL " + email + " FOUND ON REGISTRATION : " + instance.adminStaff.getFullName() + " : " + instance.adminStaff.getStaffId());
                 DialogUtils.showErrorDialog("Recruit with email " + email + " already exists!");
-            }
-            
-            else{
-            Logger.log("RECRUIT WITH EMAIL "+email+" REGISTERED SUCCESSFULLY: "+instance.adminStaff.getFullName()+" : "+instance.adminStaff.getStaffId());
-            DialogUtils.showSuccessDialog("Recruit "+email+" has been registered Successfully");
+            } else {
+                Logger.log("RECRUIT WITH EMAIL " + email + " REGISTERED SUCCESSFULLY: " + instance.adminStaff.getFullName() + " : " + instance.adminStaff.getStaffId());
+                DialogUtils.showSuccessDialog("Recruit " + email + " has been registered Successfully");
 
-           }
+            }
         }
     }
 
@@ -141,6 +136,7 @@ public class AddrecruitController implements Initializable {
         tfUserName.clear();
         pfPassword.clear();
         pfRePassword.clear();
+        tAreaBio.clear();
         dPInterViewDate.setValue(null);
         cBoxQualification.setValue(null);
     }

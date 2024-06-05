@@ -160,7 +160,13 @@ class Connection extends Thread {
                     out.writeObject("UPDATE_RECRUIT_PASSWORD_RESPONSE");
                     out.writeObject(updateSuccess);
                     out.flush();
-                }
+                } else if (command.equals("UPDATE_RECRUIT_STAFF")) {
+                    Recruit recruitToUpdate = (Recruit) in.readObject();
+                    boolean updateSuccess = DatabaseHelper.getInstance().updateRecruitFromStaff(recruitToUpdate);
+                    out.writeObject("UPDATE_RECRUIT_STAFF_RESPONSE");
+                    out.writeObject(updateSuccess);
+                    out.flush();
+                } 
 
             } catch (EOFException e) {
                 // End of stream reached, break out of the loop

@@ -8,9 +8,11 @@ import Constants.Constants;
 import ENUM.ManagementLevel;
 import ENUM.Position;
 import Utils.EncryptionUtils;
+import Utils.Utils;
 import aisr.model.AdminStaff;
 import aisr.model.ManagementStaff;
 import aisr.model.Recruit;
+import aisr.model.RecruitCounts;
 import aisr.model.SessionUser;
 import aisr.model.Staff;
 import aisr.model.Token;
@@ -205,7 +207,7 @@ public class DatabaseHelper {
 
     public boolean insertRecruit(Recruit recruit) {
 
-        String query = "INSERT INTO recruits (full_name, address, phone_number, email_address, username, password, interview_date,qualification_level,department,branch,staff_id,staff_name,date_data_added,staff_branch) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO recruits (full_name, address, phone_number, email_address, username, password, interview_date,qualification_level,bio,department,branch,staff_id,staff_name,date_data_added,staff_branch) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, recruit.getFullName());
@@ -216,12 +218,13 @@ public class DatabaseHelper {
             statement.setString(6, recruit.getPassword());
             statement.setString(7, recruit.getInterviewDate());
             statement.setString(8, recruit.getQualificationLevel());
-            statement.setString(9, recruit.getDepartment());
-            statement.setString(10, recruit.getBranch());
-            statement.setString(11, recruit.getStaffId());
-            statement.setString(12, recruit.getStaffName());
-            statement.setString(13, recruit.getDateDataAdded());
-            statement.setString(14, recruit.getStaffBranch());
+            statement.setString(9, recruit.getBio());
+            statement.setString(10, recruit.getDepartment());
+            statement.setString(11, recruit.getBranch());
+            statement.setString(12, recruit.getStaffId());
+            statement.setString(13, recruit.getStaffName());
+            statement.setString(14, recruit.getDateDataAdded());
+            statement.setString(15, recruit.getStaffBranch());
             statement.executeUpdate();
         } catch (SQLException e) {
             if (e.getErrorCode() == 1062) { // MySQL error code for duplicate entry
@@ -249,6 +252,7 @@ public class DatabaseHelper {
                 String password = resultSet.getString("password");
                 String interviewDate = resultSet.getString("interview_date");
                 String qualificationLevel = resultSet.getString("qualification_level");
+                String bio = resultSet.getString("bio");
                 String department = resultSet.getString("department");
                 String branch = resultSet.getString("branch");
                 String staffId = resultSet.getString("staff_id");
@@ -261,6 +265,7 @@ public class DatabaseHelper {
                 recruit.setQualificationLevel(qualificationLevel);
                 recruit.setDepartment(department);
                 recruit.setBranch(branch);
+                recruit.setBio(bio);
                 recruit.setStaffId(staffId);
                 recruit.setStaffName(staffName);
                 recruit.setDateDataAdded(dateDataAdded);
@@ -518,6 +523,61 @@ public class DatabaseHelper {
             e.printStackTrace();
         }
         return recruit;
+    }
+
+    // Retrieve recruit data based on department
+    public RecruitCounts getRecruitsCounts(String department) {
+        String query = "SELECT * from recruits";
+
+        RecruitCounts recruitCounts = new RecruitCounts();
+
+        String[] inputDepartments = department.split(", ");
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                recruitCounts.incrementTotalRecruitsCount();
+
+                String departmentData = resultSet.getString("department");
+                String branch = resultSet.getString("branch");
+
+                // Process department data
+                if (departmentData != null) {
+                    String[] departmentList = departmentData.split(", ");
+                    for (String dep : departmentList) {
+                        for (int i = 0; i < inputDepartments.length; i++) {
+                            if (inputDepartments[i].equals(dep)) {
+                                recruitCounts.incrementDepartmentRecruitsCount(i);
+                            }
+                        }
+                    }
+                }
+
+                // Process branch data
+                if (branch != null) {
+                    switch (branch) {
+                        case "MELBOURNE":
+                            recruitCounts.incrementBranchCount(0);
+                            break;
+                        case "SYDNEY":
+                            recruitCounts.incrementBranchCount(1);
+                            break;
+                        case "BRISBANE":
+                            recruitCounts.incrementBranchCount(2);
+                            break;
+                        case "ADELAIDE":
+                            recruitCounts.incrementBranchCount(3);
+                            break;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Handle exceptions
+        }
+
+        return recruitCounts;
     }
 
 }

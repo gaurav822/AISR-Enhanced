@@ -5,6 +5,7 @@
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
@@ -34,10 +35,10 @@
             <ChoiceBox fx:id="cBoxQualification" layoutX="210.0" layoutY="486.0" prefHeight="26.0" prefWidth="203.0" />
             <Label layoutX="102.0" layoutY="490.0" text="Qualification" />
             <DatePicker fx:id="dPInterViewDate" editable="false" layoutX="209.0" layoutY="444.0" onAction="#onDatePicked" promptText="29/03/2024" />
-            <Button layoutX="210.0" layoutY="549.0" mnemonicParsing="false" onAction="#onFilesChoosed" text="Choose files" />
-            <Label layoutX="104.0" layoutY="554.0" text="Documents:" />
-            <Button layoutX="195.0" layoutY="630.0" mnemonicParsing="false" onAction="#onDataEntered" prefHeight="32.0" prefWidth="178.0" text="Enter Recruit Details" />
-      <Button layoutX="191.0" layoutY="687.0" mnemonicParsing="false" onAction="#onDataSaved" prefHeight="32.0" prefWidth="190.0" text="Save Recruit" />
+            <Button layoutX="211.0" layoutY="653.0" mnemonicParsing="false" onAction="#onDataEntered" prefHeight="32.0" prefWidth="178.0" text="Enter Recruit Details" />
+      <Button layoutX="205.0" layoutY="715.0" mnemonicParsing="false" onAction="#onDataSaved" prefHeight="32.0" prefWidth="190.0" text="Save Recruit" />
       <Button fx:id="btnBack" layoutX="34.0" layoutY="34.0" mnemonicParsing="false" onAction="#handleBackBtn" prefHeight="27.0" prefWidth="77.0" text="&lt;- Back" />
+      <Label layoutX="104.0" layoutY="542.0" text="Bio:" />
+      <TextArea fx:id="tAreaBio" layoutX="211.0" layoutY="530.0" prefHeight="94.0" prefWidth="323.0" promptText="Enter the recruits bio here.." wrapText="true" />
          </children>
 </AnchorPane>

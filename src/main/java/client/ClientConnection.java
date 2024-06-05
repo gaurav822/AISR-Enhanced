@@ -10,6 +10,7 @@ import aisr.model.Recruit;
 import aisr.model.SessionUser;
 import com.gauravdahal.ais.r.initial.AddrecruitController;
 import com.gauravdahal.ais.r.initial.AdminDashboardController;
+import com.gauravdahal.ais.r.initial.EditrecruitController;
 import com.gauravdahal.ais.r.initial.LoginController;
 import com.gauravdahal.ais.r.initial.ManagementDashboardController;
 import com.gauravdahal.ais.r.initial.RecruitDashboardController;
@@ -208,6 +209,11 @@ class SocketDataIn extends Thread {
                     case "UPDATE_RECRUIT_RESPONSE":
                         boolean recruitUpdateSuccess = (boolean) in.readObject();
                         Platform.runLater(() -> RecruitDashboardController.handleRecruitUpdateResponse(recruitUpdateSuccess));
+                        break;
+                    
+                    case "UPDATE_RECRUIT_STAFF_RESPONSE":
+                        boolean recruitUpdateSuccessFromStaff = (boolean) in.readObject();
+                        Platform.runLater(() -> EditrecruitController.handleRecruitUpdateResponse(recruitUpdateSuccessFromStaff));
                         break;
 
                     default:

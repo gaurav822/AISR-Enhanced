@@ -64,6 +64,10 @@ public class RecruitItemManagerController implements Initializable {
             Stage stage = (Stage) hBoxEachItem.getScene().getWindow();
             // Set the new scene root
             stage.getScene().setRoot(root);
+            
+             // Adjust the stage size based on the new root node's preferred size
+            stage.setWidth(root.prefWidth(-1));
+            stage.setHeight(root.prefHeight(-1));
         } catch (IOException e) {
             e.printStackTrace();
         }

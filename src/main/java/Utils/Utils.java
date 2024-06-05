@@ -88,6 +88,16 @@ public class Utils {
         }
         return false;
     }
+     
+     
+     public static boolean containsElement(String[] array, String element) {
+        for (String str : array) {
+            if (str.equals(element)) {
+                return true;
+            }
+        }
+        return false;
+    }
    
     
 }

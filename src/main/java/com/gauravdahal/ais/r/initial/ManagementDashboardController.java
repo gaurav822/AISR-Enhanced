@@ -115,6 +115,13 @@ public class ManagementDashboardController implements Initializable {
         // Replace the content of anchorPaneDashboard with the original content
 
     }
+    
+    
+    public static ManagementStaff getManagementStaff(EditrecruitController controller) {
+        return mgmtStaff;
+    }
+    
+    
 
     @FXML
     private void showRecruitList(Event event) {
