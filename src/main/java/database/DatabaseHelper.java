@@ -24,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import logger.Logger;
 import session.SessionManager;
 
@@ -237,8 +238,8 @@ public class DatabaseHelper {
         return false;
     }
 
-    public ArrayList<Recruit> getRecruits() {
-        ArrayList<Recruit> recruits = new ArrayList<Recruit>();
+    public LinkedList<Recruit> getRecruits() {
+        LinkedList<Recruit> recruits = new LinkedList<Recruit>();
         String query = "SELECT * FROM recruits";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -578,6 +579,37 @@ public class DatabaseHelper {
         }
 
         return recruitCounts;
+    }
+
+    public LinkedList<ManagementStaff> getManagementStaffs() {
+        LinkedList<ManagementStaff> managementStaffs = new LinkedList<>();
+        String query = "SELECT * FROM staff WHERE staff_type = 'MANAGEMENT'";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                String staffId = resultSet.getString("staff_id");
+                String fullName = resultSet.getString("full_name");
+                String address = resultSet.getString("address");
+                String phoneNumber = resultSet.getString("phone_number");
+                String emailAddress = resultSet.getString("email_address");
+                String username = resultSet.getString("username");
+                String password = resultSet.getString("password");
+                String managementLevel = resultSet.getString("management_level");
+                String branchName = resultSet.getString("staff_branch");
+
+                ManagementStaff managementStaff = new ManagementStaff(fullName, address, phoneNumber, emailAddress, username, password);
+                managementStaff.setStaffId(staffId);
+                managementStaff.setManagementLevel(ManagementLevel.getManagementFromLabel(managementLevel));
+                managementStaff.setBranchName(branchName);
+
+                managementStaffs.add(managementStaff);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return managementStaffs;
     }
 
 }

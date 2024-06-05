@@ -14,6 +14,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class MultiThreadedServer {
 
@@ -130,7 +131,7 @@ class Connection extends Thread {
                     out.writeObject(staffType);
                     out.flush();
                 } else if (command.equals("GET_RECRUITS")) {
-                    ArrayList<Recruit> recruits = DatabaseHelper.getInstance().getRecruits();
+                    LinkedList<Recruit> recruits = DatabaseHelper.getInstance().getRecruits();
                     out.writeObject("RECRUIT_LIST");
                     out.writeObject(recruits);
                     out.flush();

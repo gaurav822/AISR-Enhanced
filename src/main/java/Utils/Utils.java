@@ -6,11 +6,17 @@ package Utils;
 
 import aisr.model.AdminStaff;
 import aisr.model.ManagementStaff;
+import aisr.model.Recruit;
+import database.DatabaseHelper;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -97,6 +103,60 @@ public class Utils {
             }
         }
         return false;
+    }
+     
+     public static String getLastName(String fullName) {
+        String[] parts = fullName.split(" ");
+        return parts.length > 1 ? parts[parts.length - 1] : fullName;
+    }
+     
+     
+     public static LinkedList<Recruit> getRecruitsSortedByLastNameGroupedByLocation(LinkedList<Recruit> recruits) {
+         
+        // Sort by last name in descending order
+        recruits.sort((r1, r2) -> {
+            String lastName1 = getLastName(r1.getFullName());
+            String lastName2 = getLastName(r2.getFullName());
+            return lastName2.compareTo(lastName1); // For descending order
+        });
+
+        // Group by location (branch)
+        Map<String, List<Recruit>> recruitsByLocation = recruits.stream()
+                .collect(Collectors.groupingBy(Recruit::getBranch));
+
+        // Combine grouped lists maintaining the order
+        LinkedList<Recruit> sortedAndGroupedRecruits = new LinkedList<>();
+        recruitsByLocation.values().forEach(sortedAndGroupedRecruits::addAll);
+
+        return sortedAndGroupedRecruits;
+    }
+     
+     
+     public static LinkedList<Recruit> getRecruitsSortedByQualification(LinkedList<Recruit> recruits) {
+        // Define the order of qualifications
+        Map<String, Integer> qualificationOrder = new HashMap<>();
+        qualificationOrder.put("PhD", 1);
+        qualificationOrder.put("Masters", 2);
+        qualificationOrder.put("Bachelors", 3);
+
+        // Sort the recruits by qualification level
+        recruits.sort((r1, r2) -> {
+            Integer order1 = qualificationOrder.getOrDefault(r1.getQualificationLevel(), Integer.MAX_VALUE);
+            Integer order2 = qualificationOrder.getOrDefault(r2.getQualificationLevel(), Integer.MAX_VALUE);
+            return order1.compareTo(order2);
+        });
+
+        return recruits;
+    }
+     
+     
+     
+      public static LinkedList<ManagementStaff> getManagementStaff() {
+        // Define the order of qualifications
+        
+        LinkedList<ManagementStaff> staffs = DatabaseHelper.getInstance().getManagementStaffs();
+        
+        return staffs;
     }
    
     

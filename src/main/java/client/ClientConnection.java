@@ -23,6 +23,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -140,7 +141,7 @@ class SocketDataIn extends Thread {
                         break;
 
                     case "RECRUIT_LIST":
-                        ArrayList<Recruit> recruits = (ArrayList<Recruit>) in.readObject();
+                        LinkedList<Recruit> recruits = (LinkedList<Recruit>) in.readObject();
                         Platform.runLater(() -> {
                             AdminDashboardController.updateRecruitTable(recruits);
                             ManagementDashboardController.updateRecruitTable(recruits);

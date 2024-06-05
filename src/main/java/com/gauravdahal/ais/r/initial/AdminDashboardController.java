@@ -2,10 +2,11 @@ package com.gauravdahal.ais.r.initial;
 
 import ENUM.Position;
 import Utils.DialogUtils;
+import Utils.Utils;
 import aisr.model.AdminStaff;
+import aisr.model.ManagementStaff;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -23,6 +24,7 @@ import javafx.scene.layout.VBox;
 import aisr.model.Recruit;
 import client.ClientConnection;
 import java.io.EOFException;
+import java.util.LinkedList;
 import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
@@ -56,6 +58,14 @@ public class AdminDashboardController implements Initializable {
 
     private static AdminStaff adminStaff;
 
+    private TableColumn<ManagementStaff, String> columnMName = new TableColumn<>("Full Name");
+    private TableColumn<ManagementStaff, String> columnMPhoneNumber = new TableColumn<>("Phone Number");
+    private TableColumn<ManagementStaff, String> columnMEmail = new TableColumn<>("Email Address");
+    private TableColumn<ManagementStaff, String> columnMStaffId = new TableColumn<>("Staff Id");
+    private TableColumn<ManagementStaff, String> columnMUserName = new TableColumn<>("Username");
+    private TableColumn<ManagementStaff, String> columnMAddress = new TableColumn<>("Address");
+    private TableColumn<ManagementStaff, String> columnMbranch = new TableColumn<>("Branch");
+
     @FXML
     private TextField tfFullName;
     @FXML
@@ -68,6 +78,12 @@ public class AdminDashboardController implements Initializable {
     private TextField tfStaffId;
     @FXML
     private ChoiceBox<String> cBoxPositionType;
+    @FXML
+    private ChoiceBox<String> choiceBoxAnalytics;
+
+    private LinkedList<Recruit> mRecruits;
+    @FXML
+    private TableView<ManagementStaff> tableViewManagement;
 
     /**
      * Initializes the controller class.
@@ -81,11 +97,41 @@ public class AdminDashboardController implements Initializable {
                 Position.VOLUNTEER.label
         ));
 
+        choiceBoxAnalytics.setItems(FXCollections.observableArrayList(
+                "Recruits by Last Name",
+                "Recruits by Qualification",
+                "None"
+        ));
+
+        choiceBoxAnalytics.setOnAction(event -> {
+            String selectedStaffType = choiceBoxAnalytics.getValue();
+            if (selectedStaffType.equals("Recruits by Last Name")) {
+                ObservableList<Recruit> observableRecruits
+                        = FXCollections.observableList(
+                                Utils.getRecruitsSortedByLastNameGroupedByLocation(mRecruits));
+                instance.tableViewRecruit.setItems(observableRecruits);
+            } else if (selectedStaffType.equals("Recruits by Qualification")) {
+                ObservableList<Recruit> observableRecruits
+                        = FXCollections.observableList(
+                                Utils.getRecruitsSortedByQualification(mRecruits));
+                instance.tableViewRecruit.setItems(observableRecruits);
+
+            } else {
+                ObservableList<Recruit> observableRecruits
+                        = FXCollections.observableList(mRecruits);
+                instance.tableViewRecruit.setItems(observableRecruits);
+
+            }
+            // You can perform any other actions based on the selected position here
+        });
+
         setupRecruitTable();
+        setupManagementTable();
 
         //load data
         //setup factory
         setupRowFactoryForRecruit();
+        setupRowFactoryForManagement();
         instance = this;
         requestDataFromServer("GET_RECRUITS", null);// Set the instance
         requestDataFromServer("GET_ADMIN_INFO", SessionManager.getInstance().getCurrentUser().getEmail());
@@ -98,9 +144,10 @@ public class AdminDashboardController implements Initializable {
         App.setRoot("addrecruit");
     }
 
-    public static void updateRecruitTable(ArrayList<Recruit> recruits) {
+    public static void updateRecruitTable(LinkedList<Recruit> recruits) {
         if (instance != null) {
-            ObservableList<Recruit> observableRecruits = FXCollections.observableArrayList(recruits);
+            instance.mRecruits = recruits;
+            ObservableList<Recruit> observableRecruits = FXCollections.observableList(recruits);
             instance.tableViewRecruit.setItems(observableRecruits);
         }
     }
@@ -141,6 +188,27 @@ public class AdminDashboardController implements Initializable {
         columnUserName.setCellValueFactory(new PropertyValueFactory<>("userName"));
     }
 
+    private void setupManagementTable() {
+        tableViewManagement.getColumns().add(columnMName);
+        tableViewManagement.getColumns().add(columnMPhoneNumber);
+        tableViewManagement.getColumns().add(columnMEmail);
+        tableViewManagement.getColumns().add(columnMStaffId);
+        tableViewManagement.getColumns().add(columnMUserName);
+        tableViewManagement.getColumns().add(columnMAddress);
+        tableViewManagement.getColumns().add(columnMbranch);
+        
+        
+        columnMName.setCellValueFactory(new PropertyValueFactory<>("fullName"));
+        columnMPhoneNumber.setCellValueFactory(new PropertyValueFactory<>("phoneNumber"));
+        columnMEmail.setCellValueFactory(new PropertyValueFactory<>("emailAddress"));
+        columnMStaffId.setCellValueFactory(new PropertyValueFactory<>("staffId"));
+        columnMUserName.setCellValueFactory(new PropertyValueFactory<>("userName"));
+        columnMAddress.setCellValueFactory(new PropertyValueFactory<>("address"));
+        columnMbranch.setCellValueFactory(new PropertyValueFactory<>("branchName"));
+
+
+    }
+
     @FXML
     private void showRecruitList(Event event) throws IOException {
         requestDataFromServer("GET_RECRUITS", null);// Set the instance
@@ -158,6 +226,19 @@ public class AdminDashboardController implements Initializable {
             return row;
         });
     }
+    
+    private void setupRowFactoryForManagement() {
+        tableViewManagement.setRowFactory(tv -> {
+            TableRow<ManagementStaff> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && (!row.isEmpty())) {
+                }
+            });
+            return row;
+        });
+    }
+    
+    
 
     private void showRecruitDetails(Recruit recruit) {
         try {
@@ -204,7 +285,7 @@ public class AdminDashboardController implements Initializable {
 
     @FXML
     private void onLogout(ActionEvent event) throws IOException {
-        Logger.log("LOGOUT SUCCESS : "+adminStaff.getFullName()+" : "+adminStaff.getStaffId());
+        Logger.log("LOGOUT SUCCESS : " + adminStaff.getFullName() + " : " + adminStaff.getStaffId());
         SessionManager.getInstance().setCurrentUser(null);
         DialogUtils.showSuccessDialog("Logout Successful");
         App.setRoot("login");
@@ -212,13 +293,13 @@ public class AdminDashboardController implements Initializable {
 
     @FXML
     private void onProfileUpdate(ActionEvent event) {
-      Logger.log("PROFILE UPDATED : "+adminStaff.getFullName()+" : "+adminStaff.getStaffId());
-      DialogUtils.showSuccessDialog("Profile Updated Successfully");
+        Logger.log("PROFILE UPDATED : " + adminStaff.getFullName() + " : " + adminStaff.getStaffId());
+        DialogUtils.showSuccessDialog("Profile Updated Successfully");
     }
 
     @FXML
     private void onPasswordChange(ActionEvent event) {
-        Logger.log("PASSWORD CHANGED : "+adminStaff.getFullName()+" : "+adminStaff.getStaffId());
+        Logger.log("PASSWORD CHANGED : " + adminStaff.getFullName() + " : " + adminStaff.getStaffId());
         DialogUtils.showSuccessDialog("Password Changed Successfully");
     }
 
@@ -226,6 +307,12 @@ public class AdminDashboardController implements Initializable {
     private void onAccountDelete(ActionEvent event) throws IOException {
         DialogUtils.showSuccessDialog("Account deleted");
         App.setRoot("login");
+    }
+
+    @FXML
+    private void showManagementList(Event event) {
+            ObservableList<ManagementStaff> staffs = FXCollections.observableArrayList(Utils.getManagementStaff());
+            instance.tableViewManagement.setItems(staffs);
     }
 
 }

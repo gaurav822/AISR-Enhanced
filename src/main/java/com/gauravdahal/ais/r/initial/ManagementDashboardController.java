@@ -36,6 +36,7 @@ import javafx.scene.layout.VBox;
 import aisr.model.Recruit;
 import client.ClientConnection;
 import java.io.EOFException;
+import java.util.LinkedList;
 import javafx.collections.ObservableList;
 import session.SessionManager;
 
@@ -61,15 +62,14 @@ public class ManagementDashboardController implements Initializable {
     @FXML
     private ChoiceBox<String> cBoxUniversity;
 
-    private ObservableList<Recruit> mRecruits;
+    private LinkedList<Recruit> mRecruits;
     @FXML
     private Label labelRecruitNotFound;
 
     private static ManagementDashboardController instance;
-    
+
     private static ManagementStaff mgmtStaff;
-    
-    
+
     @FXML
     private TextField fullName;
     @FXML
@@ -85,13 +85,12 @@ public class ManagementDashboardController implements Initializable {
     @FXML
     private ChoiceBox<String> cBoxBranch;
 
-
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
+
         cBoxManagement.setItems(FXCollections.observableArrayList(
                 ManagementLevel.SENIOR.label,
                 ManagementLevel.MIDLEVEL.label,
@@ -108,20 +107,16 @@ public class ManagementDashboardController implements Initializable {
         requestDataFromServer("GET_RECRUITS", null);// Set the instance
         requestDataFromServer("GET_MANAGEMENT_INFO", SessionManager.getInstance().getCurrentUser().getEmail());
 
-
     }
 
     public void navigateBackToOriginalView() {
         // Replace the content of anchorPaneDashboard with the original content
 
     }
-    
-    
+
     public static ManagementStaff getManagementStaff(EditrecruitController controller) {
         return mgmtStaff;
     }
-    
-    
 
     @FXML
     private void showRecruitList(Event event) {
@@ -145,10 +140,9 @@ public class ManagementDashboardController implements Initializable {
             System.out.println("readline: " + e.getMessage());
         }
     }
-    
-    
-     public static void setManagementStaff(ManagementStaff staff) {
-         mgmtStaff = staff;
+
+    public static void setManagementStaff(ManagementStaff staff) {
+        mgmtStaff = staff;
         if (instance != null) {
 
             instance.fullName.setText(staff.getFullName());
@@ -161,28 +155,28 @@ public class ManagementDashboardController implements Initializable {
         }
     }
 
-    public static void updateRecruitTable(ArrayList<Recruit> recruits) {
+    public static void updateRecruitTable(LinkedList<Recruit> recruits) {
+        if (instance != null) {
+            instance.mRecruits = recruits;
+            instance.recruitLayout.getChildren().clear();
+            try {
+                instance.labelRecruitNotFound.setVisible(false);
+                for (int i = 0; i < recruits.size(); i++) {
 
-        if(instance!=null){
-        instance.recruitLayout.getChildren().clear();
-        try {
-            instance.labelRecruitNotFound.setVisible(false);
-            for (int i = 0; i < recruits.size(); i++) {
+                    FXMLLoader loader = new FXMLLoader(App.class.getResource("recruititem_manager.fxml"));
 
-                FXMLLoader loader = new FXMLLoader(App.class.getResource("recruititem_manager.fxml"));
-
-                HBox hbox = loader.load();
-                RecruitItemManagerController controller = loader.getController();
-                controller.setData(recruits.get(i));
-                instance.recruitLayout.getChildren().add(hbox);
+                    HBox hbox = loader.load();
+                    RecruitItemManagerController controller = loader.getController();
+                    controller.setData(recruits.get(i));
+                    instance.recruitLayout.getChildren().add(hbox);
 //           
 
+                }
+
+            } catch (IOException e) {
+                System.out.println("IOException Occured");
+
             }
-
-        } catch (IOException e) {
-            System.out.println("IOException Occured");
-
-        }
         }
 
     }
