@@ -106,11 +106,15 @@ public class AdminDashboardController implements Initializable {
         choiceBoxAnalytics.setOnAction(event -> {
             String selectedStaffType = choiceBoxAnalytics.getValue();
             if (selectedStaffType.equals("Recruits by Last Name")) {
+                Logger.log("Viewed Recruits by Last Name : " + adminStaff.getFullName() + " : " + adminStaff.getStaffId());
+
                 ObservableList<Recruit> observableRecruits
                         = FXCollections.observableList(
                                 Utils.getRecruitsSortedByLastNameGroupedByLocation(mRecruits));
                 instance.tableViewRecruit.setItems(observableRecruits);
             } else if (selectedStaffType.equals("Recruits by Qualification")) {
+                Logger.log("Viewed Recruits by Qualificatione : " + adminStaff.getFullName() + " : " + adminStaff.getStaffId());
+
                 ObservableList<Recruit> observableRecruits
                         = FXCollections.observableList(
                                 Utils.getRecruitsSortedByQualification(mRecruits));
@@ -196,8 +200,7 @@ public class AdminDashboardController implements Initializable {
         tableViewManagement.getColumns().add(columnMUserName);
         tableViewManagement.getColumns().add(columnMAddress);
         tableViewManagement.getColumns().add(columnMbranch);
-        
-        
+
         columnMName.setCellValueFactory(new PropertyValueFactory<>("fullName"));
         columnMPhoneNumber.setCellValueFactory(new PropertyValueFactory<>("phoneNumber"));
         columnMEmail.setCellValueFactory(new PropertyValueFactory<>("emailAddress"));
@@ -205,7 +208,6 @@ public class AdminDashboardController implements Initializable {
         columnMUserName.setCellValueFactory(new PropertyValueFactory<>("userName"));
         columnMAddress.setCellValueFactory(new PropertyValueFactory<>("address"));
         columnMbranch.setCellValueFactory(new PropertyValueFactory<>("branchName"));
-
 
     }
 
@@ -226,7 +228,7 @@ public class AdminDashboardController implements Initializable {
             return row;
         });
     }
-    
+
     private void setupRowFactoryForManagement() {
         tableViewManagement.setRowFactory(tv -> {
             TableRow<ManagementStaff> row = new TableRow<>();
@@ -237,8 +239,6 @@ public class AdminDashboardController implements Initializable {
             return row;
         });
     }
-    
-    
 
     private void showRecruitDetails(Recruit recruit) {
         try {
@@ -276,11 +276,15 @@ public class AdminDashboardController implements Initializable {
 
     @FXML
     private void showProfile(Event event) {
-//        requestDataFromServer("ADMIN_PROFILE","");
+
+        Logger.log("VIEWED PROFILE DETAILS : " + adminStaff.getFullName() + " : " + adminStaff.getStaffId());
+
     }
 
     @FXML
     private void showSettings(Event event) {
+        Logger.log("VIEWED SETTINGS : " + adminStaff.getFullName() + " : " + adminStaff.getStaffId());
+
     }
 
     @FXML
@@ -311,8 +315,9 @@ public class AdminDashboardController implements Initializable {
 
     @FXML
     private void showManagementList(Event event) {
-            ObservableList<ManagementStaff> staffs = FXCollections.observableArrayList(Utils.getManagementStaff());
-            instance.tableViewManagement.setItems(staffs);
+        Logger.log("VIEWED MANAGEMENT STAFF DETAILS : " + adminStaff.getFullName() + " : " + adminStaff.getStaffId());
+        ObservableList<ManagementStaff> staffs = FXCollections.observableArrayList(Utils.getManagementStaff());
+        instance.tableViewManagement.setItems(staffs);
     }
 
 }
