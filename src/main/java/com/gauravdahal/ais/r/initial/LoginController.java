@@ -1,13 +1,23 @@
 package com.gauravdahal.ais.r.initial;
 
+import ENUM.ManagementLevel;
+import ENUM.Position;
 import ENUM.StaffType;
 import ENUM.UserType;
 import Utils.DialogUtils;
+import aisr.model.AdminStaff;
+import aisr.model.ManagementStaff;
+import aisr.model.StaffLists;
 import aisr.model.Token;
 import client.ClientConnection;
+import java.io.BufferedReader;
 import java.io.EOFException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -61,7 +71,7 @@ public class LoginController implements Initializable {
     private ClientConnection clientConnection;
 
     private static LoginController instance;
-    
+
     private static String oneTimeToken = "";
 
     @Override
@@ -150,6 +160,10 @@ public class LoginController implements Initializable {
 
     }
 
+    public static void handleStaffIntializationComplete() {
+        DialogUtils.showSuccessDialog("For the first use of the program, the system initializes the initial user from a CSV file.");
+    }
+
     private void sendTokenToServer(String email) {
         if (!isClientConnected()) {
             return;
@@ -205,8 +219,8 @@ public class LoginController implements Initializable {
     @FXML
     private void onRegistrationClicked(ActionEvent event) throws IOException {
         if (!isClientConnected()) {
-                return;
-           }
+            return;
+        }
         App.setRoot("registration");
     }
 
@@ -234,22 +248,87 @@ public class LoginController implements Initializable {
     }
 
     @FXML
-    private void onConnect(ActionEvent event) {
+    private void onConnect(ActionEvent event) throws IOException {
         ClientConnection clientConnection = ClientConnection.getInstance();
         boolean isConnected = clientConnection.toggleConnection();
         if (isConnected) {
+            initializeStaff();
             connectionButton.setText("Disconnect from Server");
+
         } else {
             connectionButton.setText("Connect to Server");
         }
 
     }
 
+    public void initializeStaff() throws IOException {
+        if (!isClientConnected()) {
+            System.out.println("Server is not connected!!!");
+        }
+
+        StaffLists staffLists = loadCSVData("staff.csv");
+
+        clientConnection.getOut().writeObject("INTIALIZE_STAFFS");
+        clientConnection.getOut().writeObject(staffLists);
+        clientConnection.getOut().flush();
+    }
+
+    /**
+     * Loads staff data from a CSV file.
+     *
+     * @param filePath the file path of the CSV file
+     */
+    private StaffLists loadCSVData(String filePath) {
+        List<AdminStaff> adminStaffList = new ArrayList<>();
+        List<ManagementStaff> managementStaffList = new ArrayList<>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line = br.readLine();  // Skip the header line
+            while ((line = br.readLine()) != null) {
+                if (line.trim().isEmpty()) {
+                    continue;
+                }
+                String[] data = line.split(",");
+                if (data.length < 11) {
+                    data = Arrays.copyOf(data, 11);
+                    for (int i = 0; i < data.length; i++) {
+                        if (data[i] == null) {
+                            data[i] = "";
+                        }
+                    }
+                }
+                String fullName = data[0];
+                String address = data[1];
+                String phoneNumber = data[2];
+                String email = data[3];
+                String userName = data[4];
+                String password = data[5];
+                String staffId = data[6];
+                String staffType = data[7].trim();
+                String positionType = data[8].trim();
+                String managementLvl = data[9].trim();
+                String branch = data[10];
+
+                if (staffType.equals(StaffType.ADMIN.getLabel())) {
+                    AdminStaff adminStaff = new AdminStaff(fullName, address, phoneNumber, email, userName, password, staffId, "".equals(positionType) ? null : Position.getPositionFromLabel(positionType));
+                    adminStaffList.add(adminStaff);
+                } else {
+                    ManagementStaff managementStaff = new ManagementStaff(fullName, address, phoneNumber, address, userName, password, staffId, "".equals(managementLvl) ? null : ManagementLevel.getManagementFromLabel(managementLvl), branch);
+                    managementStaffList.add(managementStaff);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return new StaffLists(adminStaffList, managementStaffList);
+    }
+
     @FXML
     private void onRecruitRegistrationClicked(ActionEvent event) throws IOException {
         if (!isClientConnected()) {
-                return;
-           }
+            return;
+        }
         App.setRoot("recruit_registration");
     }
 
@@ -268,15 +347,14 @@ public class LoginController implements Initializable {
     }
 
     public static void handleRecruitLoginSuccess() throws IOException {
-        if(instance.tfoneTimeToken.getText().equals(oneTimeToken)){
+        if (instance.tfoneTimeToken.getText().equals(oneTimeToken)) {
             instance.tfoneTimeToken.clear();
             DialogUtils.showSuccessDialog("Login Success");
             App.setRoot("recruit_dashboard");
-        }
-        else{
+        } else {
             DialogUtils.showErrorDialog("Invalid Token");
         }
-        
+
     }
 
     public static void handleRecruitLoginFailed() {

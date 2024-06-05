@@ -7,9 +7,9 @@ package server;
 import aisr.model.AdminStaff;
 import aisr.model.ManagementStaff;
 import aisr.model.Recruit;
+import aisr.model.StaffLists;
 import aisr.model.Token;
 import database.DatabaseHelper;
-
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -167,7 +167,31 @@ class Connection extends Thread {
                     out.writeObject("UPDATE_RECRUIT_STAFF_RESPONSE");
                     out.writeObject(updateSuccess);
                     out.flush();
-                } 
+                } else if (command.equals("INTIALIZE_STAFFS")) {
+                    StaffLists staffLists = (StaffLists) in.readObject();
+
+                    int adminCount = DatabaseHelper.getInstance().getAdminStaffCountByType("ADMIN");
+                    int managementCount = DatabaseHelper.getInstance().getAdminStaffCountByType("MANAGEMENT");
+
+                    boolean initilized = false;
+                    if (adminCount == 0) {
+                        for (AdminStaff adminStaff : staffLists.getAdminStaffList()) {
+                            DatabaseHelper.getInstance().insertAdminStaff(adminStaff);
+                            initilized = true;
+                        }
+                    }
+
+                    if (managementCount == 0) {
+                        for (ManagementStaff managementStaff : staffLists.getManagementStaffList()) {
+                            DatabaseHelper.getInstance().insertManagementStaff(managementStaff);
+                            initilized = true;
+                        }
+                    }
+
+                    out.writeObject("INTIALIZE_STAFF_SUCCESS");
+                    out.writeObject(initilized);
+                    out.flush();
+                }
 
             } catch (EOFException e) {
                 // End of stream reached, break out of the loop

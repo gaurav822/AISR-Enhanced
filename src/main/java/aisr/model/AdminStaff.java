@@ -12,19 +12,19 @@ import java.io.Serializable;
  * @author gauravdahal
  */
 public class AdminStaff extends Staff implements Serializable {
-    
+
     private String staffId;
     private Position positionType;
-    
-    public AdminStaff(String fullName, String address, String phoneNumber, String emailAddress, String userName,String password) {
-        super(fullName, address, phoneNumber, emailAddress, userName,password);
+
+    public AdminStaff(String fullName, String address, String phoneNumber, String emailAddress, String userName, String password) {
+        super(fullName, address, phoneNumber, emailAddress, userName, password);
     }
-    
-//     public AdminStaff(String fullName, String address, String phoneNumber, String emailAddress, String userName,String password,String staffId,Position positionType) {
-//        super(fullName, address, phoneNumber, emailAddress, userName,password);
-//        this.staffId=staffId;
-//        this.positionType=positionType;
-//    }
+
+    public AdminStaff(String fullName, String address, String phoneNumber, String emailAddress, String userName, String password, String staffId, Position positionType) {
+        super(fullName, address, phoneNumber, emailAddress, userName, password);
+        this.staffId = staffId;
+        this.positionType = positionType;
+    }
 
     /**
      * @return the staffId
@@ -53,17 +53,14 @@ public class AdminStaff extends Staff implements Serializable {
     public void setPositionType(Position positionType) {
         this.positionType = positionType;
     }
-    
+
     @Override
     public String toString() {
-         return String.format("%s,\"%s\",\"%s\",\"%s\",\"\",\"\"", super.toString(), staffId, "Administration Staff", positionType.label);
+        return String.format("%s,\"%s\",\"%s\",\"%s\",\"\",\"\"", super.toString(), staffId, "Administration Staff", positionType.label);
     }
-    
-    
-    public void viewDetails(){
-    
+
+    public void viewDetails() {
+
     }
-    
-   
-    
+
 }

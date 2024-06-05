@@ -108,8 +108,8 @@ public class RegistrationController implements Initializable {
 
         //setting stafftype to choice box (admin or management)
         cBoxStaffType.setItems(FXCollections.observableArrayList(
-                StaffType.ADMIN.label,
-                StaffType.MANAGEMENT.label
+                StaffType.ADMIN.getLabel(),
+                StaffType.MANAGEMENT.getLabel()
         ));
 
         //setting management level to choice box 
@@ -126,11 +126,11 @@ public class RegistrationController implements Initializable {
                 BranchName.ADELAIDE.toString()
         ));
         
-        cBoxStaffType.setValue(StaffType.ADMIN.label);
+        cBoxStaffType.setValue(StaffType.ADMIN.getLabel());
 
         cBoxStaffType.setOnAction(event -> {
             String selectedStaffType = cBoxStaffType.getValue();
-            if (selectedStaffType.equals(StaffType.MANAGEMENT.label)) {
+            if (selectedStaffType.equals(StaffType.MANAGEMENT.getLabel())) {
                 staffType = StaffType.MANAGEMENT;
                 cBoxPosition.setDisable(true);
                 cBoxMgmtLevel.setDisable(false);

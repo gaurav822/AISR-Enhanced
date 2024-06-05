@@ -11,16 +11,22 @@ import java.io.Serializable;
  *
  * @author gauravdahal
  */
-public class ManagementStaff extends Staff implements Serializable{
-    
+public class ManagementStaff extends Staff implements Serializable {
+
     private String staffId;
     private ManagementLevel managementLevel;
     private String branchName;
-    
-    public ManagementStaff(String fullName, String address, String phoneNumber, String emailAddress, String userName,String password) {
-        super(fullName, address, phoneNumber, emailAddress, userName,password);
+
+    public ManagementStaff(String fullName, String address, String phoneNumber, String emailAddress, String userName, String password) {
+        super(fullName, address, phoneNumber, emailAddress, userName, password);
     }
 
+    public ManagementStaff(String fullName, String address, String phoneNumber, String emailAddress, String userName, String password, String staffId, ManagementLevel managementLevel, String branchName) {
+        super(fullName, address, phoneNumber, emailAddress, userName, password);
+        this.staffId = staffId;
+        this.managementLevel = managementLevel;
+        this.branchName = branchName;
+    }
 
     /**
      * @return the staffId
@@ -63,17 +69,15 @@ public class ManagementStaff extends Staff implements Serializable{
     public void setBranchName(String branchName) {
         this.branchName = branchName;
     }
-    
+
     @Override
     public String toString() {
-            return String.format("%s,\"%s\",\"%s\",\"\",\"%s\",\"%s\"", super.toString(), staffId, "Management Staff", managementLevel.label, branchName);
+        return String.format("%s,\"%s\",\"%s\",\"\",\"%s\",\"%s\"", super.toString(), staffId, "Management Staff", managementLevel.label, branchName);
 
     }
-    
-    
-    public void viewDetails(){
-    
+
+    public void viewDetails() {
+
     }
-    
-    
+
 }

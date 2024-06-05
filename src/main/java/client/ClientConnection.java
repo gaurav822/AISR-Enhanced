@@ -149,7 +149,7 @@ class SocketDataIn extends Thread {
 
                     case "STAFF_TYPE":
                         String staffType = (String) in.readObject();
-                        System.out.println("The staff type is "+staffType);
+                        System.out.println("The staff type is " + staffType);
                         Platform.runLater(() -> {
                             try {
                                 LoginController.navigateToStaffDashboard(staffType);
@@ -163,10 +163,10 @@ class SocketDataIn extends Thread {
                         AdminStaff adminInfo = (AdminStaff) in.readObject();
                         Platform.runLater(() -> AdminDashboardController.setAdminStaff(adminInfo));
                         break;
-                    
+
                     case "GET_MANAGEMENT_INFO":
                         ManagementStaff mgmtInfo = (ManagementStaff) in.readObject();
-                     System.out.println("The mgmt staff from client is "+mgmtInfo);
+                        System.out.println("The mgmt staff from client is " + mgmtInfo);
 
                         Platform.runLater(() -> ManagementDashboardController.setManagementStaff(mgmtInfo));
                         break;
@@ -210,10 +210,17 @@ class SocketDataIn extends Thread {
                         boolean recruitUpdateSuccess = (boolean) in.readObject();
                         Platform.runLater(() -> RecruitDashboardController.handleRecruitUpdateResponse(recruitUpdateSuccess));
                         break;
-                    
+
                     case "UPDATE_RECRUIT_STAFF_RESPONSE":
                         boolean recruitUpdateSuccessFromStaff = (boolean) in.readObject();
                         Platform.runLater(() -> EditrecruitController.handleRecruitUpdateResponse(recruitUpdateSuccessFromStaff));
+                        break;
+
+                    case "INTIALIZE_STAFF_SUCCESS":
+                        boolean initilized = (boolean) in.readObject();
+                        if (initilized) {
+                            Platform.runLater(() -> LoginController.handleStaffIntializationComplete());
+                        }
                         break;
 
                     default:

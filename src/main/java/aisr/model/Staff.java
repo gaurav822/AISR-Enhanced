@@ -10,23 +10,23 @@ import java.io.Serializable;
  *
  * @author gauravdahal
  */
-public class Staff implements Serializable{
+public class Staff implements Serializable {
+
     private String fullName;
     private String address;
     private String phoneNumber;
     private String emailAddress;
     private String userName;
     private String password;
-    
-    public Staff(String fullName,String address,String phoneNumber,String emailAddress,String userName,String password){
-        this.fullName=fullName;
+
+    public Staff(String fullName, String address, String phoneNumber, String emailAddress, String userName, String password) {
+        this.fullName = fullName;
         this.address = address;
         this.phoneNumber = phoneNumber;
-        this.emailAddress=emailAddress;
-        this.userName=userName;
-        this.password=password;
+        this.emailAddress = emailAddress;
+        this.userName = userName;
+        this.password = password;
     }
-    
 
     /**
      * @return the fullName
@@ -97,11 +97,11 @@ public class Staff implements Serializable{
     public void setUserName(String userName) {
         this.userName = userName;
     }
-    
+
     @Override
     public String toString() {
-        return String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"", 
-            fullName, address, phoneNumber, emailAddress, userName, getPassword());
+        return String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
+                fullName, address, phoneNumber, emailAddress, userName, getPassword());
     }
 
     /**
@@ -117,5 +117,5 @@ public class Staff implements Serializable{
     public void setPassword(String password) {
         this.password = password;
     }
-    
-}   
+
+}

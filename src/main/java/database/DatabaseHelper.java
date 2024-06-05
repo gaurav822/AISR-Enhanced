@@ -8,13 +8,11 @@ import Constants.Constants;
 import ENUM.ManagementLevel;
 import ENUM.Position;
 import Utils.EncryptionUtils;
-import Utils.Utils;
 import aisr.model.AdminStaff;
 import aisr.model.ManagementStaff;
 import aisr.model.Recruit;
 import aisr.model.RecruitCounts;
 import aisr.model.SessionUser;
-import aisr.model.Staff;
 import aisr.model.Token;
 import java.sql.Blob;
 import java.sql.Connection;
@@ -23,7 +21,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import logger.Logger;
 import session.SessionManager;
@@ -308,6 +305,21 @@ public class DatabaseHelper {
         }
         System.out.println("The mgmt staff is " + mgmtStaff);
         return mgmtStaff;
+    }
+
+    public int getAdminStaffCountByType(String type) {
+        int count = 0;
+        String query = "SELECT COUNT(*) count FROM staff WHERE staff_type = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, type);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                count = resultSet.getInt("count");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return count;
     }
 
     public AdminStaff getAdminDetail(String email) {
