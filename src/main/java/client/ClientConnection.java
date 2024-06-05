@@ -205,7 +205,7 @@ class SocketDataIn extends Thread {
                         Platform.runLater(() -> RecruitDashboardController.handlePasswordUpdateResponse(updateSuccess));
                         break;
 
-                    case "UPDATE_RECRUIT_PASSWORD":
+                    case "UPDATE_RECRUIT_RESPONSE":
                         boolean recruitUpdateSuccess = (boolean) in.readObject();
                         Platform.runLater(() -> RecruitDashboardController.handleRecruitUpdateResponse(recruitUpdateSuccess));
                         break;

@@ -5,15 +5,14 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import ENUM.QualificationLevel;
+import Utils.DialogUtils;
 import Utils.EncryptionUtils;
 import aisr.model.Recruit;
 import client.ClientConnection;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.sql.Connection;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -39,6 +38,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import session.SessionManager;
+import java.io.IOException;
+import logger.Logger;
 
 /**
  * Controller class for the Recruit Dashboard.
@@ -97,8 +98,8 @@ public class RecruitDashboardController implements Initializable {
     private ClientConnection clientConnection;
 
     Image orignalImage;
-    byte[] imageData;
-
+    byte[] tmpImageData = null;
+    byte[] orignalImageData = null;
     Recruit currentRecruit = null;
 
     /**
@@ -112,9 +113,10 @@ public class RecruitDashboardController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         clientConnection = ClientConnection.getInstance();
+        qualificationLevelComboBox.setItems(FXCollections.observableArrayList(QualificationLevel.values()));
+        orignalImage = new Image(getClass().getResourceAsStream("/assets/empty.jpg"));
         currentRecruit = SessionManager.getInstance().getCurrentUser().getRecruit();
         loadRecruitInformation();
-        qualificationLevelComboBox.setItems(FXCollections.observableArrayList(QualificationLevel.values()));
     }
 
     /**
@@ -131,14 +133,12 @@ public class RecruitDashboardController implements Initializable {
             interviewDateLabel.setText(currentRecruit.getInterviewDate());
             qualificationLevelLabel.setText(currentRecruit.getQualificationLevel());
 
-            Image image = new Image(getClass().getResourceAsStream("/assets/empty.jpg"));
-
             if (currentRecruit.getImageData() != null) {
                 ByteArrayInputStream inputStream = new ByteArrayInputStream(currentRecruit.getImageData());
-                image = new Image(inputStream);
+                orignalImageData = currentRecruit.getImageData();
+                orignalImage = new Image(inputStream);
             }
-            orignalImage = image;
-            imageView.setImage(image);
+            imageView.setImage(orignalImage);
         }
     }
 
@@ -157,8 +157,16 @@ public class RecruitDashboardController implements Initializable {
      */
     @FXML
     private void handleSaveAction() throws IOException {
+        byte[] imageData = null;
+
+        if (tmpImageData != null) {
+            imageData = tmpImageData;
+        } else {
+            imageData = orignalImageData;
+        }
+
         Recruit recruit = new Recruit(
-                bioText.getText(),
+                bioTextArea.getText(),
                 fullNameField.getText(),
                 addressField.getText(),
                 phoneNumberField.getText(),
@@ -174,8 +182,12 @@ public class RecruitDashboardController implements Initializable {
         clientConnection.getOut().flush();
         toggleEditMode(false);
 
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(imageData);
-        orignalImage = new Image(byteArrayInputStream);
+        currentRecruit = recruit;
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(tmpImageData);
+        orignalImage = new Image(inputStream);
+        orignalImageData = tmpImageData;
+        tmpImageData = null;
+        loadRecruitInformation();
     }
 
     /**
@@ -184,7 +196,7 @@ public class RecruitDashboardController implements Initializable {
     @FXML
     private void handleCancelAction() {
         if (fullNameField.isVisible()) {
-            imageData = null;
+            tmpImageData = null;
             imageView.setImage(orignalImage);
         }
         toggleEditMode(false);
@@ -358,8 +370,9 @@ public class RecruitDashboardController implements Initializable {
         Stage stage = (Stage) imageView.getScene().getWindow();
         File file = fileChooser.showOpenDialog(stage);
         if (file != null) {
-            imageData = Files.readAllBytes(file.toPath());
+            byte[] imageData = Files.readAllBytes(file.toPath());
             Image image = new Image(new ByteArrayInputStream(imageData));
+            tmpImageData = imageData;
             imageView.setImage(image);
         }
     }
@@ -398,8 +411,12 @@ public class RecruitDashboardController implements Initializable {
 
                 contentStream.showText("Full Name: " + fullNameLabel.getText());
 
-                String text = "Bio: " + bioText.getText();
-                wrapText(contentStream, text, 100, 640, 400);
+                if (bioText.getText().trim().length() > 0) {
+                    String text = "Bio: " + bioText.getText();
+                    wrapText(contentStream, text, 100, 640, 400);
+                } else {
+                    contentStream.newLineAtOffset(0, -20);
+                }
 
                 contentStream.showText("Address: " + addressLabel.getText());
                 contentStream.newLineAtOffset(0, -20);
@@ -460,5 +477,13 @@ public class RecruitDashboardController implements Initializable {
             contentStream.newLineAtOffset(0, -leading);
             contentStream.showText(line.toString().trim());
         }
+    }
+
+    @FXML
+    private void handleLogoutAction(ActionEvent event) throws IOException {
+        Logger.log("LOGOUT SUCCESS : " + currentRecruit.getFullName());
+        SessionManager.getInstance().setCurrentUser(null);
+        DialogUtils.showSuccessDialog("Logout Successful");
+        App.setRoot("login");
     }
 }
