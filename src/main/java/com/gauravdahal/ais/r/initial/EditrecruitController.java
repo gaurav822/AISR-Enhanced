@@ -245,6 +245,9 @@ public class EditrecruitController implements Initializable {
 
     @FXML
     private void onGraphicalViewClick(ActionEvent event){
+        if(finalDepartment==null){
+            finalDepartment = "No Department Assigned";
+        }
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("graphicalView.fxml"));
             Parent root = loader.load();
