@@ -96,7 +96,7 @@ class Connection extends Thread {
                     out.flush();
 
                 } else if (command.equals("ADD_RECRUIT_BATCH")) {
-                    ArrayList<Recruit> recruits = (ArrayList<Recruit>) in.readObject();
+                    LinkedList<Recruit> recruits = (LinkedList<Recruit>) in.readObject();
                     for (Recruit recruit : recruits) {
                         boolean isDuplicateEntry = DatabaseHelper.getInstance().insertRecruit(recruit);
                         out.writeObject("ADD_RECRUIT_BATCH_RESPONSE");
