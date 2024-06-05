@@ -204,6 +204,9 @@ public class LoginController implements Initializable {
 
     @FXML
     private void onRegistrationClicked(ActionEvent event) throws IOException {
+        if (!isClientConnected()) {
+                return;
+           }
         App.setRoot("registration");
     }
 
@@ -244,6 +247,9 @@ public class LoginController implements Initializable {
 
     @FXML
     private void onRecruitRegistrationClicked(ActionEvent event) throws IOException {
+        if (!isClientConnected()) {
+                return;
+           }
         App.setRoot("recruit_registration");
     }
 

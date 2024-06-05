@@ -124,12 +124,6 @@ public class RecruitRegistrationController implements Initializable {
 
         ClientConnection clientConnection = ClientConnection.getInstance();
 
-        if (clientConnection.getSocket() == null || !clientConnection.getSocket().isConnected()) {
-            DialogUtils.showWarningDialog("Client is disconnected. Connect to the Server first");
-            System.out.println("Client is disconnected. Connect to the Server first");
-            return;
-        }
-
         try {
             clientConnection.getOut().writeObject("ADD_RECRUIT"); // Send command to add admin staff
             clientConnection.getOut().writeObject(recruit); // Send admin staff object

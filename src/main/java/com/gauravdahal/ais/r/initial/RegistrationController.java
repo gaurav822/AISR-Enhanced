@@ -283,7 +283,7 @@ public class RegistrationController implements Initializable {
     private void onStaffDataSaved(ActionEvent event) {
 
         if (adminStaffs.isEmpty() && managementStaffs.isEmpty()) {
-            DialogUtils.showWarningDialog("Please enter the data first to arraylist");
+            DialogUtils.showWarningDialog("Please enter the data first to linked list");
         } else {
             try {
                 sendDataToServer();
@@ -298,12 +298,6 @@ public class RegistrationController implements Initializable {
     private void sendDataToServer() {
 
         ClientConnection clientConnection = ClientConnection.getInstance();
-
-        if (clientConnection.getSocket() == null || !clientConnection.getSocket().isConnected()) {
-            DialogUtils.showWarningDialog("Client is disconnected. Connect to the Server first");
-            System.out.println("Client is disconnected. Connect to the Server first");
-            return;
-        }
 
         try {
             for (AdminStaff adminStaff : adminStaffs) {
@@ -324,6 +318,7 @@ public class RegistrationController implements Initializable {
             DialogUtils.showSuccessDialog("Staffs Registered Successfully!");
             adminStaffs.clear();
             managementStaffs.clear();
+            App.setRoot("login");
 
         } catch (EOFException e) {
             DialogUtils.showErrorDialog(e.getMessage());

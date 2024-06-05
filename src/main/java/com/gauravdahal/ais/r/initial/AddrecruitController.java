@@ -22,6 +22,7 @@ import javafx.scene.layout.AnchorPane;
 import aisr.model.AdminStaff;
 import aisr.model.Recruit;
 import client.ClientConnection;
+import java.util.LinkedList;
 import javafx.scene.control.TextArea;
 import logger.Logger;
 
@@ -49,7 +50,7 @@ public class AddrecruitController implements Initializable {
     @FXML
     private DatePicker dPInterViewDate;
 
-    private ArrayList<Recruit> recruits;
+    private LinkedList<Recruit> recruits;
     @FXML
     private PasswordField pfPassword;
     @FXML
@@ -71,7 +72,7 @@ public class AddrecruitController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         instance = this;
-        recruits = new ArrayList<>();
+        recruits = new LinkedList<>();
 
         cBoxQualification.setItems(FXCollections.observableArrayList(
                 QualificationLevel.Bachelors.toString(),
