@@ -30,15 +30,15 @@ public class DatabaseHelper {
     private static DatabaseHelper instance;
     private static final String DATABASE_URL = "jdbc:mysql://localhost:3306";
     private static final String DATABASE_USER = "root";
-    private static final String DATABASE_PASSWORD = "";
+    private static final String DATABASE_PASSWORD = "pass";
 
     private Connection connection;
 
     // Private constructor to prevent instantiation from outside
-    public DatabaseHelper() {
+    public DatabaseHelper(String databaseUrl, String username, String password) {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection(DATABASE_URL, DATABASE_USER, DATABASE_PASSWORD);
+            connection = DriverManager.getConnection(databaseUrl, username, password);
             createDatabaseIfNotExists();
             selectDatabase();
             createRecruitTableIfNotExists();
@@ -47,6 +47,10 @@ public class DatabaseHelper {
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public DatabaseHelper() {
+        this(DATABASE_URL, DATABASE_USER, DATABASE_PASSWORD);
     }
 
     // Method to get the singleton instance of DatabaseHelper
