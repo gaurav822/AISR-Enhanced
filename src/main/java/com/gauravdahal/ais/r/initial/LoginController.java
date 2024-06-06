@@ -12,6 +12,7 @@ import aisr.model.Token;
 import client.ClientConnection;
 import java.io.BufferedReader;
 import java.io.EOFException;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
@@ -267,6 +268,10 @@ public class LoginController implements Initializable {
         }
 
         StaffLists staffLists = loadCSVData("staff.csv");
+        if (staffLists == null) {
+            DialogUtils.showErrorDialog("Since the CSV file 'staff.csv' cannot be found, no initial data has been created.");
+            return;
+        }
 
         clientConnection.getOut().writeObject("INTIALIZE_STAFFS");
         clientConnection.getOut().writeObject(staffLists);
@@ -317,6 +322,9 @@ public class LoginController implements Initializable {
                     managementStaffList.add(managementStaff);
                 }
             }
+        } catch (FileNotFoundException e) {
+            System.err.println("File not found: " + filePath);
+            return null;
         } catch (IOException e) {
             e.printStackTrace();
         }
