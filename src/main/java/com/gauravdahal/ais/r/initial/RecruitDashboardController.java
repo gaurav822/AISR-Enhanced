@@ -186,10 +186,12 @@ public class RecruitDashboardController implements Initializable {
             toggleEditMode(false);
 
             currentRecruit = recruit;
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(tmpImageData);
-            orignalImage = new Image(inputStream);
-            orignalImageData = tmpImageData;
-            tmpImageData = null;
+            if (tmpImageData != null) {
+                ByteArrayInputStream inputStream = new ByteArrayInputStream(tmpImageData);
+                orignalImage = new Image(inputStream);
+                orignalImageData = tmpImageData;
+                tmpImageData = null;
+            }
             loadRecruitInformation();
         }
     }
@@ -242,7 +244,7 @@ public class RecruitDashboardController implements Initializable {
         if (result.isPresent() && result.get() == ButtonType.OK) {
             String newPassword = newPasswordField.getText();
             String repeatPassword = repeatPasswordField.getText();
-            
+
             if (Utils.isNotValidPassword(newPassword, repeatPassword)) {
                 return;
             }
@@ -307,14 +309,6 @@ public class RecruitDashboardController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
-    }
-
-    /**
-     * Handles the action of clicking the logout button.
-     */
-    @FXML
-    private void handleLogoutAction() {
-        // Implement your logout logic here
     }
 
     /**
